@@ -2,11 +2,6 @@ package com.upx.doando_mais.data.model;
 
 public class Usuario {
 
-
-    // Construtor vazio - obrigatório para utilizar no Firebase.
-
-    public Usuario(){}
-
     // Atributos do usuário
 
     private String uid; //Id único gerado pelo Firebase Authentication, chave primária.
@@ -21,6 +16,27 @@ public class Usuario {
     private String perfil; // "Doador", "Organização", "Mobilizador".
     private int quantidadeDoacoes; // Contador de doações realizadas.
     private String fotoUrl;
+
+
+    // Construtor vazio - obrigatório para utilizar no Firebase.
+
+    public Usuario(){}
+
+    // Construtor com parâmetros (útil para criar novos usuários no código)
+    public Usuario(String uid, String nomeCompleto, String email, String cpf, String sexo, String dataNascimento, String cidade, String estado, String tipoSanguineo, String perfil, int quantidadeDoacoes, String fotoUrl) {
+        this.uid = uid;
+        this.nomeCompleto = nomeCompleto;
+        this.email = email;
+        this.cpf = cpf;
+        this.sexo = sexo;
+        this.dataNascimento = dataNascimento;
+        this.cidade = cidade;
+        this.estado = estado;
+        this.tipoSanguineo = tipoSanguineo;
+        this.perfil = perfil;
+        this.quantidadeDoacoes = quantidadeDoacoes;
+        this.fotoUrl = fotoUrl;
+    }
 
     // Construtores, getters e setters
 

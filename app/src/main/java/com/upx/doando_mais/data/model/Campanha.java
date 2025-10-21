@@ -34,8 +34,33 @@ public class Campanha {
 
     public Campanha (){}
 
-    // Getter e Setters
+    // Construtor completo (exemplo, pode precisar de ajustes)
+    public Campanha(String id, String criadorUid, String tipoCampanha, String titulo, String descricao, String nomePaciente, String cidadePaciente, String estadoPaciente, String tipoSanguineoNecessario, int metaDoadores, String nomeHemocentro, String enderecoHemocentro, String cidadeHemocentro, String estadoHemocentro, String contatoWhatsApp, Date dataCriacao, Date dataTermino, String status, int contadorIntencoes, int contadorCompartilhamentos, String nomeOrganizador) {
+        this.id = id;
+        this.criadorUid = criadorUid;
+        this.tipoCampanha = tipoCampanha;
+        this.titulo = titulo;
+        this.descricao = descricao;
+        this.nomePaciente = nomePaciente;
+        this.cidadePaciente = cidadePaciente;
+        this.estadoPaciente = estadoPaciente;
+        this.tipoSanguineoNecessario = tipoSanguineoNecessario;
+        this.metaDoadores = metaDoadores;
+        this.nomeHemocentro = nomeHemocentro;
+        this.enderecoHemocentro = enderecoHemocentro;
+        this.cidadeHemocentro = cidadeHemocentro;
+        this.estadoHemocentro = estadoHemocentro;
+        this.contatoWhatsApp = contatoWhatsApp;
+        this.dataCriacao = dataCriacao;
+        this.dataTermino = dataTermino;
+        this.status = status;
+        this.contadorIntencoes = contadorIntencoes;
+        this.contadorCompartilhamentos = contadorCompartilhamentos;
+        this.nomeOrganizador = nomeOrganizador;
+    }
 
+
+    // Getter e Setters
 
     public String getId() {
         return id;
