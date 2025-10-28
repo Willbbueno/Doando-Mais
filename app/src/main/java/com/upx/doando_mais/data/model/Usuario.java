@@ -1,5 +1,5 @@
 package com.upx.doando_mais.data.model;
-
+// lembrar de validar as entradas ao get e set
 public class Usuario {
 
     // Atributos do usuário
