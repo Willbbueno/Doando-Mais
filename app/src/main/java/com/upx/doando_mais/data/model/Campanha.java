@@ -30,7 +30,7 @@ public class Campanha {
     private String nomeOrganizador; // Nome do usuário ou organização que criou a campanha, será exibido.
 
 
-    // Construtor obrigatório do Firebase
+    // Construtor vazio obrigatório do Firebase
 
     public Campanha (){}
 
