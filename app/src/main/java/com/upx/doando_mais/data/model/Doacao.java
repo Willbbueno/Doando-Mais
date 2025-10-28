@@ -15,6 +15,18 @@ public class Doacao {
     private String comprovanteUrl;
     private Date dataRegistro;
 
+    // Construtor com parâmetros
+    public Doacao(String id, String tipoSanguineo, Date dataDoacao, String cidade, String estado, String comprovanteUrl, Date dataRegistro) {
+
+        this.id = id;
+        this.tipoSanguineo = tipoSanguineo;
+        this.dataDoacao = dataDoacao;
+        this.cidade = cidade;
+        this.estado = estado;
+        this.comprovanteUrl = comprovanteUrl;
+        this.dataRegistro = dataRegistro;
+    }
+
     // Construtor vazio para firebase
     public Doacao() {}
 
