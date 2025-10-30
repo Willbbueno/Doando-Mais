@@ -1,5 +1,5 @@
 package com.upx.doando_mais;
-
+// A main irá hospedar os fragments e a bottomNavigationView
 import android.os.Bundle;
 
 import androidx.activity.EdgeToEdge;
