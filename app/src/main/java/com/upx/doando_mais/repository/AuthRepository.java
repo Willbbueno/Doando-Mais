@@ -29,7 +29,27 @@ public class AuthRepository {
 
     // Métodos para autenticação - LOGIN, CADASTRAR E LOGOUT
     public void login(String email, String senha) {
-        // TODO: Implementar logica do login
+        // Limpa o estado de erro anterior
+        erroAutenticacaoLiveData.postValue(null);
+
+        firebaseAuth.signInWithEmailAndPassword(email, senha)
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // SUCESSO! O usuário está logado.
+
+                            // 1. Atualiza o LiveData com o usuário logado
+                            usuarioLogadoLiveData.postValue(firebaseAuth.getCurrentUser());
+                        } else {
+                            // FALHA! (Ex: usuário não encontrado, senha incorreta)
+
+                            // 1. Envia a mensagem de erro para o ViewModel
+                            String erro = task.getException() != null ? task.getException().getMessage() : "Erro desconhecido no login";
+                            erroAutenticacaoLiveData.postValue(erro);
+                        }
+                    }
+                });
     }
 
     // --- Método de Cadastro ---
