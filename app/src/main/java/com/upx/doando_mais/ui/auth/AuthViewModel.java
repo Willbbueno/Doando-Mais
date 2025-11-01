@@ -37,7 +37,7 @@ public class AuthViewModel extends AndroidViewModel {
         // Conecta o LiveData da ViewModel com o LiveData do Repositório
         this.usuarioLogadoLiveData = authRepository.getUsuarioLogadoLiveData();
         this.erroAutenticacaoLiveData = authRepository.getErroAutenticacaoLiveData();
-        this.salvamentoUsuarioSucessoLiveData = userRepository.getSalvamentoUsuarioSucessoLiveData();
+        this.salvamentoUsuarioSucessoLiveData = userRepository.getSalvamentoSucessoLiveData();
 
         // --- ORQUESTRAÇÃO DO CADASTRO ---
         // Aqui está a mágica: A ViewModel "ouve" o AuthRepository.
