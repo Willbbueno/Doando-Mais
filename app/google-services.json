@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1019849971111",
+    "project_id": "doandomais2025",
+    "storage_bucket": "doandomais2025.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1019849971111:android:4ca859cefbe21970401282",
+        "android_client_info": {
+          "package_name": "com.upx.doando_mais"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCEGqC2zFtIL6dKACBGzxVgOdR8na26HbE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
