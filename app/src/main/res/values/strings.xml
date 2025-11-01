@@ -1,4 +1,6 @@
 <resources>
+    <string name="app_name">Doando+</string>
+
     <string-array name="array_sexo">
         <item>Selecione seu sexo</item>
         <item>Masculino</item>
@@ -26,4 +28,5 @@
         <item>Organização</item>
         <item>Mobilizador</item>
     </string-array>
+
 </resources>
