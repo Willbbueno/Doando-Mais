@@ -1,4 +1,10 @@
 package com.upx.doando_mais.ui.acompanhamento;
 
-public class AcompanhamentoFragment {
+import androidx.fragment.app.Fragment;
+
+public class AcompanhamentoFragment extends Fragment {
+
+    // Construtor vazio
+    public AcompanhamentoFragment(){}
+
 }

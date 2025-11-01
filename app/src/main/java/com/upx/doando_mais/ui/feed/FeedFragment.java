@@ -1,4 +1,10 @@
 package com.upx.doando_mais.ui.feed;
 
-public class FeedFragment {
+import androidx.fragment.app.Fragment;
+
+public class FeedFragment extends Fragment {
+
+    //Construtor vazio
+    public FeedFragment(){}
+
 }
