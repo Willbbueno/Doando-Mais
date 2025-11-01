@@ -1,4 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-
+    <item
+        android:id="@+id/feedFragment"
+        android:icon="@android:drawable/ic_menu_compass"
+        android:title="Feed" />
+    <item
+        android:id="@+id/orientacoesFragment"
+        android:icon="@android:drawable/ic_menu_help"
+        android:title="Orientações" />
+    <item
+        android:id="@+id/criarCampanhaFragment"
+        android:icon="@android:drawable/ic_input_add"
+        android:title="Criar" />
+    <item
+        android:id="@+id/acompanhamentoFragment"
+        android:icon="@android:drawable/ic_menu_agenda"
+        android:title="Acompanhar" />
+    <item
+        android:id="@+id/perfilFragment"
+        android:icon="@android:drawable/ic_menu_manage"
+        android:title="Perfil" />
 </menu>
