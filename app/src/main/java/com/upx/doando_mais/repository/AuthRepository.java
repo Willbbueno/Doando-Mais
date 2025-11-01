@@ -1,10 +1,13 @@
 package com.upx.doando_mais.repository;
 // classe que lida Login, cadastro, logout via firestore auth, cuida de toda a autenticação.
 
+import androidx.annotation.NonNull;
+import androidx.lifecycle.MutableLiveData;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import androidx.lifecycle.MutableLiveData; // Importante
 import com.google.firebase.auth.FirebaseUser;
-
 public class AuthRepository {
 
     private FirebaseAuth firebaseAuth;
@@ -26,12 +29,41 @@ public class AuthRepository {
 
     // Métodos para autenticação - LOGIN, CADASTRAR E LOGOUT
     public void login(String email, String senha) {
-
+        // TODO: Implementar logica do login
     }
 
     // --- Método de Cadastro ---
+    /**
+     * Tenta criar um novo usuário no Firebase Authentication.
+     * Atualiza os LiveData com o resultado da operação (sucesso ou falha).
+     */
     public void cadastrar(String email, String senha) {
 
+        // Limpa o estado de erro/sucesso anterior antes de uma nova tentativa
+        erroAutenticacaoLiveData.postValue(null);
+        cadastroSucessoLiveData.postValue(false);
+
+        firebaseAuth.createUserWithEmailAndPassword(email, senha)
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // SUCESSO! O usuário foi criado no Firebase Auth.
+
+                            // 1. Atualiza o LiveData com o novo usuário logado
+                            usuarioLogadoLiveData.postValue(firebaseAuth.getCurrentUser());
+
+                            // 2. Avisa o ViewModel que esta etapa (Auth) foi concluída
+                            cadastroSucessoLiveData.postValue(true);
+                        } else {
+                            // FALHA! (Ex: e-mail já em uso, senha fraca)
+
+                            // 1. Envia a mensagem de erro para o ViewModel
+                            String erro = task.getException() != null ? task.getException().getMessage() : "Erro desconhecido no cadastro";
+                            erroAutenticacaoLiveData.postValue(erro);
+                        }
+                    }
+                });
     }
 
     // --- Método de Logout ---
@@ -41,7 +73,7 @@ public class AuthRepository {
     }
 
 
-
+    // Getters para as viewModels
     public MutableLiveData<FirebaseUser> getUsuarioLogadoLiveData() {
         return usuarioLogadoLiveData;
     }
