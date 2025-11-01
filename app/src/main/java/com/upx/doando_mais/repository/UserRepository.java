@@ -1,6 +1,7 @@
 package com.upx.doando_mais.repository;
 
 // vai interagir com a coleção Usuários no firestore
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -45,5 +46,9 @@ public class UserRepository {
 
     public MutableLiveData<Boolean> getSalvamentoSucessoLiveData() {
         return salvamentoSucessoLiveData;
+    }
+
+    public LiveData<Boolean> getSalvamentoUsuarioSucessoLiveData() {
+        return getSalvamentoUsuarioSucessoLiveData();
     }
 }
