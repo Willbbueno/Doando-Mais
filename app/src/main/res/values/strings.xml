@@ -1,3 +1,29 @@
 <resources>
-    <string name="app_name">Doando-Mais</string>
+    <string-array name="array_sexo">
+        <item>Selecione seu sexo</item>
+        <item>Masculino</item>
+        <item>Feminino</item>
+        <item>Outro</item>
+        <item>Prefiro não informar</item>
+    </string-array>
+
+    <string-array name="array_tipo_sanguineo">
+        <item>Selecione seu tipo sanguíneo</item>
+        <item>A+</item>
+        <item>A-</item>
+        <item>B+</item>
+        <item>B-</item>
+        <item>O+</item>
+        <item>O-</item>
+        <item>AB+</item>
+        <item>AB-</item>
+        <item>Não sei</item>
+    </string-array>
+
+    <string-array name="array_perfil">
+        <item>Selecione seu perfil</item>
+        <item>Doador</item>
+        <item>Organização</item>
+        <item>Mobilizador</item>
+    </string-array>
 </resources>
