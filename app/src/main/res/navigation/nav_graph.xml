@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+
+    app:startDestination="@id/loginFragment">
+
+    <fragment
+    android:id="@+id/loginFragment"
+    android:name="com.upx.doando_mais.ui.auth.LoginFragment"
+    android:label="Login"
+    tools:layout="@layout/fragment_login" >
+    <action
+        android:id="@+id/action_loginFragment_to_cadastroFragment"
+        app:destination="@id/cadastroFragment" />
+    <action
+        android:id="@+id/action_loginFragment_to_feedFragment"
+        app:destination="@id/feedFragment"
+        app:popUpTo="@id/loginFragment"
+        app:popUpToInclusive="true" />
+</fragment>
+
+    <fragment
+        android:id="@+id/cadastroFragment"
+        android:name="com.upx.doando_mais.ui.auth.CadastroFragment"
+        android:label="Cadastro"
+        tools:layout="@layout/fragment_cadastro" >
+        <action
+            android:id="@+id/action_cadastroFragment_to_loginFragment"
+            app:destination="@id/loginFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/feedFragment"
+        android:name="com.upx.doando_mais.ui.feed.FeedFragment"
+        android:label="Feed"
+        tools:layout="@layout/fragment_feed" />
+
+    <fragment
+        android:id="@+id/orientacoesFragment"
+        android:name="com.upx.doando_mais.ui.orientacoes.OrientacoesFragment"
+        android:label="Orientações"
+        tools:layout="@layout/fragment_orientacoes" />
+
+    <fragment
+        android:id="@+id/criarCampanhaFragment"
+        android:name="com.upx.doando_mais.ui.campanha_criar.CriarCampanhaFragment"
+        android:label="Criar Campanha"
+        tools:layout="@layout/fragment_criar_campanha" />
+
+    <fragment
+        android:id="@+id/acompanhamentoFragment"
+        android:name="com.upx.doando_mais.ui.acompanhamento.AcompanhamentoFragment"
+        android:label="Acompanhamento"
+        tools:layout="@layout/fragment_acompanhamento" />
+
+    <fragment
+        android:id="@+id/perfilFragment"
+        android:name="com.upx.doando_mais.ui.perfil.PerfilFragment"
+        android:label="Perfil"
+        tools:layout="@layout/fragment_perfil" />
+
+</navigation>
