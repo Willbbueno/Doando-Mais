@@ -81,11 +81,7 @@ public class UserRepository {
         return erroLiveData;
     }
 
-    public MutableLiveData<Boolean> getSalvamentoSucessoLiveData() {
-        return salvamentoSucessoLiveData;
-    }
-
-    public LiveData<Boolean> getSalvamentoUsuarioSucessoLiveData() {
-        return getSalvamentoUsuarioSucessoLiveData();
+    public LiveData<Boolean> getSalvamentoSucessoLiveData() {
+        return this.salvamentoSucessoLiveData;
     }
 }
