@@ -63,8 +63,8 @@ public class LoginFragment extends Fragment {
         binding.tvRegisterLink.setOnClickListener(v -> {
             // Navega para a tela de Cadastro
             // TODO: Criar a ação no nav_graph.xml
-            // navController.navigate(R.id.action_loginFragment_to_cadastroFragment);
-            Toast.makeText(getContext(), "Navegar para Cadastro (Impl. NavGraph)", Toast.LENGTH_SHORT).show();
+            navController.navigate(R.id.action_loginFragment_to_cadastroFragment);
+
         });
 
         binding.tvForgotPassword.setOnClickListener(v -> {
@@ -87,9 +87,7 @@ public class LoginFragment extends Fragment {
                 Toast.makeText(getContext(), "Login bem-sucedido!", Toast.LENGTH_SHORT).show();
 
                 // Navega para a tela principal (Feed)
-                // TODO: Criar a ação no nav_graph.xml
-                // navController.navigate(R.id.action_loginFragment_to_mainActivity);
-                Toast.makeText(getContext(), "Navegar para Tela Principal (Impl. NavGraph)", Toast.LENGTH_SHORT).show();
+                navController.navigate(R.id.action_loginFragment_to_feedFragment);
             }
         });
 

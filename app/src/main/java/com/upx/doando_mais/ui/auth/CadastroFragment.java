@@ -130,9 +130,7 @@ public class CadastroFragment extends Fragment {
 
         binding.tvLoginLink.setOnClickListener(v -> {
             // Navega de volta para a tela de Login
-            // TODO: Criar a ação de navegação no 'nav_graph.xml'
-            // navController.navigate(R.id.action_cadastroFragment_to_loginFragment);
-            Toast.makeText(getContext(), "Navegar para Login (Implementar NavGraph)", Toast.LENGTH_SHORT).show();
+            navController.popBackStack();
         });
     }
 
@@ -149,9 +147,7 @@ public class CadastroFragment extends Fragment {
                 Toast.makeText(getContext(), "Cadastro concluído com sucesso!", Toast.LENGTH_LONG).show();
 
                 // 4. Navega para a tela principal
-                // TODO: Criar a ação de navegação no 'nav_graph.xml'
-                // navController.navigate(R.id.action_cadastroFragment_to_mainActivity);
-                Toast.makeText(getContext(), "Navegar para Tela Principal (Implementar NavGraph)", Toast.LENGTH_SHORT).show();
+                navController.navigate(R.id.action_cadastroFragment_to_feedFragment);
             }
         });
 
