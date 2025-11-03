@@ -28,12 +28,15 @@ public class CampaignRepository {
 
     // LiveData para erros
     private MutableLiveData<String> erroLiveData;
+    // LiveData para criação das campanhas, para que apareçam no feed assim que fossem criadas
+    private MutableLiveData<Boolean> criacaoCampanhaSucessoLiveData;
 
     public CampaignRepository() {
         this.db = FirebaseFirestore.getInstance();
         this.campanhasCollection = db.collection(COLLECTION_NAME);
         this.campanhasLiveData = new MutableLiveData<>();
         this.erroLiveData = new MutableLiveData<>();
+        this.criacaoCampanhaSucessoLiveData = new MutableLiveData<>();
     }
 
     // --- Getters para o ViewModel ---
@@ -41,10 +44,10 @@ public class CampaignRepository {
     public LiveData<List<Campanha>> getCampanhasLiveData() {
         return campanhasLiveData;
     }
-
     public LiveData<String> getErroLiveData() {
         return erroLiveData;
     }
+    public LiveData<Boolean> getCriacaoCampanhaSucessoLiveData() { return criacaoCampanhaSucessoLiveData; }
 
     // --- Métodos de Acesso ao Banco ---
 
@@ -88,15 +91,22 @@ public class CampaignRepository {
      * Você usará isso na tela "CriarCampanhaFragment".
      */
     public void criarCampanha(Campanha novaCampanha) {
-        // Exemplo de como você faria para salvar uma nova:
-        /*
+        // Limpa o estado anterior
+        erroLiveData.postValue(null);
+        criacaoCampanhaSucessoLiveData.postValue(false);
+
+        // O Firestore preenche o dataCriacao automaticamente por causa do @ServerTimestamp
         campanhasCollection.add(novaCampanha)
                 .addOnSuccessListener(documentReference -> {
-                    // Sucesso
+                    // Campanha salva.
+                    Log.d(TAG, "Campanha salva com ID: " + documentReference.getId());
+                    criacaoCampanhaSucessoLiveData.postValue(true);
                 })
                 .addOnFailureListener(e -> {
-                    // Falha
+                    // Se falhar, aparece msg de erro.
+                    Log.w(TAG, "Erro ao criar campanha", e);
+                    erroLiveData.postValue("Erro ao criar campanha: " + e.getMessage());
+                    criacaoCampanhaSucessoLiveData.postValue(false);
                 });
-        */
     }
 }
