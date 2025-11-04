@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.upx.doando_mais.data.model.Usuario;
 
@@ -52,6 +53,9 @@ public class UserRepository {
 
                             // 1. Avisa o ViewModel que esta etapa foi concluída
                             salvamentoSucessoLiveData.postValue(true);
+
+                            // 2. Atualiza o usuarioLiveData
+                            usuarioLiveData.postValue(usuario);
                         } else {
                             // FALHA!
 
@@ -63,14 +67,38 @@ public class UserRepository {
                 });
     }
 
-    //Busca os dados de um usuário no Firestore usando seu UID.
     /**
      * Busca os dados de um usuário no Firestore usando seu UID.
-     * (Implementação futura)
+     * Atualiza o usuarioLiveData com o usuário encontrado.
      * @param uid O ID do usuário logado.
      */
     public void buscarUsuario(String uid) {
+        if (uid == null || uid.isEmpty()) {
+            erroLiveData.postValue("UID nulo. Não é possível buscar usuário.");
+            return;
+        }
 
+        // Busca o documento no Firestore com o UID do usuário
+        usuariosCollection.document(uid).get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document != null && document.exists()) {
+                            // Se rodar, converte o documento em um objeto Usuario
+                            Usuario usuario = document.toObject(Usuario.class);
+                            // Atualiza o LiveData com os dados do usuário
+                            usuarioLiveData.postValue(usuario);
+                        } else {
+                            // Usuário autenticado, mas sem dados no Firestore (pode acontecer)
+                            erroLiveData.postValue("Usuário não encontrado no banco de dados.");
+                            usuarioLiveData.postValue(null); // Informa que não achou
+                        }
+                    } else {
+                        // Erro ao buscar
+                        String erro = task.getException() != null ? task.getException().getMessage() : "Erro ao buscar dados do usuário.";
+                        erroLiveData.postValue(erro);
+                    }
+                });
     }
 
     public MutableLiveData<Usuario> getUsuarioLiveData() {

@@ -20,10 +20,13 @@ public class AuthViewModel extends AndroidViewModel {
     private UserRepository userRepository;
 
     // LiveData
-    private LiveData<FirebaseUser> usuarioLogadoLiveData;
+    private LiveData<FirebaseUser> usuarioLogadoLiveData; // Info do Auth (UID, email)
     private LiveData<String> erroAutenticacaoLiveData;
     private LiveData<Boolean> cadastroSucessoLiveData;
     private LiveData<Boolean> salvamentoUsuarioSucessoLiveData;
+
+
+    private LiveData<Usuario> dadosUsuarioLiveData; // Info do Firestore (Nome, CPF, etc.)
 
     // Guarda o usuário que está sendo cadastrado
     private Usuario usuarioPendente;
@@ -38,9 +41,11 @@ public class AuthViewModel extends AndroidViewModel {
         this.usuarioLogadoLiveData = authRepository.getUsuarioLogadoLiveData();
         this.erroAutenticacaoLiveData = authRepository.getErroAutenticacaoLiveData();
         this.salvamentoUsuarioSucessoLiveData = userRepository.getSalvamentoSucessoLiveData();
+        // Conecta o LiveData de dados do usuário
+        this.dadosUsuarioLiveData = userRepository.getUsuarioLiveData();
 
-        // --- ORQUESTRAÇÃO DO CADASTRO ---
-        // Aqui está a mágica: A ViewModel "ouve" o AuthRepository.
+        // ORQUESTRAÇÃO DO CADASTRO
+        // Ouve o SUCESSO DO AUTH para então SALVAR NO FIRESTORE
         this.cadastroSucessoLiveData = authRepository.getCadastroSucessoLiveData();
         cadastroSucessoLiveData.observeForever(sucesso -> {
             if (sucesso) {
@@ -54,6 +59,20 @@ public class AuthViewModel extends AndroidViewModel {
                     userRepository.salvarUsuarioAdicional(user.getUid(), usuarioPendente);
                     usuarioPendente = null; // Limpa o usuário pendente
                 }
+            }
+        });
+
+        // ORQUESTRAÇÃO DE LOGIN / LOGOUT
+        // Ouve o status do Firebase Auth (usuárioLogadoLiveData)
+        this.usuarioLogadoLiveData.observeForever(firebaseUser -> {
+            if (firebaseUser != null) {
+                // Usuário LOGOU (ou app iniciou logado)
+                // Passo 2 (do Login): Buscar os dados completos do Firestore
+                userRepository.buscarUsuario(firebaseUser.getUid());
+            } else {
+                // Usuário LOGOUT
+                // Limpa os dados do usuário que estavam na memória
+                userRepository.getUsuarioLiveData().postValue(null);
             }
         });
     }
@@ -76,16 +95,18 @@ public class AuthViewModel extends AndroidViewModel {
         authRepository.cadastrar(email, senha);
     }
 
-    // ... (restante dos métodos: login, logout, getters...)
-    // ...
-
     public void login(String email, String senha) {
+        // Inicia o Passo 1 (Login no Auth).
         authRepository.login(email, senha);
     }
 
     public void logout() {
+        // O AuthRepository vai setar o usuarioLogadoLiveData para null.
+        // O novo observador no construtor cuidará de limpar os dados do usuário.
         authRepository.logout();
     }
+
+    //GETTERS
 
     public LiveData<FirebaseUser> getUsuarioLogadoLiveData() {
         return usuarioLogadoLiveData;
@@ -96,11 +117,17 @@ public class AuthViewModel extends AndroidViewModel {
     }
 
     public LiveData<Boolean> getCadastroSucessoLiveData() {
-        // A View não precisa mais observar este, mas não tem problema
         return cadastroSucessoLiveData;
     }
 
     public LiveData<Boolean> getSalvamentoUsuarioSucessoLiveData() {
         return salvamentoUsuarioSucessoLiveData;
+    }
+    /**
+     * Expõe os dados completos do usuário (Nome, CPF, etc.) vindos do Firestore.
+     * Os Fragments (como CriarCampanha) vão observar este LiveData.
+     */
+    public LiveData<Usuario> getDadosUsuarioLiveData() {
+        return dadosUsuarioLiveData;
     }
 }
