@@ -61,6 +61,19 @@
         android:id="@+id/perfilFragment"
         android:name="com.upx.doando_mais.ui.perfil.PerfilFragment"
         android:label="PerfilFragment"
-        tools:layout="@layout/fragment_perfil" />
+        tools:layout="@layout/fragment_perfil" >
+
+        <action
+            android:id="@+id/action_perfilFragment_to_atualizarCadastroFragment"
+            app:destination="@id/atualizarCadastroFragment" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/atualizarCadastroFragment"
+        android:name="com.upx.doando_mais.ui.perfil.AtualizarCadastroFragment"
+        android:label="AtualizarCadastroFragment"
+        tools:layout="@layout/fragment_atualizar_cadastro" />
+
 
 </navigation>
