@@ -27,10 +27,11 @@
             android:id="@+id/tv_item_descricao"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="4dp"
             android:maxLines="3"
             android:textAppearance="?attr/textAppearanceBody2"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_item_titulo"
             tools:text="Nosso querido paciente João da Silva precisa de doações O+ no Hemonúcleo de Sorocaba." />
@@ -43,6 +44,7 @@
             android:textAppearance="?attr/textAppearanceCaption"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_item_descricao"
             tools:text="Local: Hemonúcleo de Sorocaba" />
