@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -31,12 +32,16 @@ public class CampaignRepository {
     // LiveData para criação das campanhas, para que apareçam no feed assim que fossem criadas
     private MutableLiveData<Boolean> criacaoCampanhaSucessoLiveData;
 
+    // LiveData para a campanha específica (Tela de Detalhe)
+    private MutableLiveData<Campanha> campanhaDetalheLiveData;
+
     public CampaignRepository() {
         this.db = FirebaseFirestore.getInstance();
         this.campanhasCollection = db.collection(COLLECTION_NAME);
         this.campanhasLiveData = new MutableLiveData<>();
         this.erroLiveData = new MutableLiveData<>();
         this.criacaoCampanhaSucessoLiveData = new MutableLiveData<>();
+        this.campanhaDetalheLiveData = new MutableLiveData<>();
     }
 
     // --- Getters para o ViewModel ---
@@ -48,7 +53,9 @@ public class CampaignRepository {
         return erroLiveData;
     }
     public LiveData<Boolean> getCriacaoCampanhaSucessoLiveData() { return criacaoCampanhaSucessoLiveData; }
-
+    public LiveData<Campanha> getCampanhaDetalheLiveData() {
+        return campanhaDetalheLiveData;
+    }
     // --- Métodos de Acesso ao Banco ---
 
     /**
@@ -107,6 +114,47 @@ public class CampaignRepository {
                     Log.w(TAG, "Erro ao criar campanha", e);
                     erroLiveData.postValue("Erro ao criar campanha: " + e.getMessage());
                     criacaoCampanhaSucessoLiveData.postValue(false);
+                });
+    }
+
+    /**
+     * Busca uma única campanha no Firestore usando seu ID de documento.
+     * Usado pela tela de DetalheCampanha.
+     *
+     * @param campanhaId O ID do documento da campanha a ser buscada.
+     */
+    public void buscarCampanhaPorId(String campanhaId) {
+        if (campanhaId == null || campanhaId.isEmpty()) {
+            erroLiveData.postValue("ID da campanha é inválido.");
+            return;
+        }
+
+        // Limpa dados anteriores
+        campanhaDetalheLiveData.postValue(null);
+        erroLiveData.postValue(null);
+
+        // Busca o documento específico pelo ID
+        campanhasCollection.document(campanhaId).get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document != null && document.exists()) {
+                            // SUCESSO! Converte o documento no nosso objeto Campanha.java
+                            Campanha campanha = document.toObject(Campanha.class);
+                            if (campanha != null) {
+                                campanha.setId(document.getId()); // Seta o ID
+                                campanhaDetalheLiveData.postValue(campanha); // Envia o objeto
+                            }
+                        } else {
+                            // Documento não encontrado
+                            Log.w(TAG, "Nenhuma campanha encontrada com o ID: " + campanhaId);
+                            erroLiveData.postValue("Campanha não encontrada.");
+                        }
+                    } else {
+                        // Erro na busca
+                        Log.e(TAG, "Erro ao buscar campanha por ID", task.getException());
+                        erroLiveData.postValue("Erro ao carregar detalhes: " + task.getException().getMessage());
+                    }
                 });
     }
 }
