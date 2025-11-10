@@ -60,7 +60,6 @@ public class CampanhaAdapter extends ListAdapter<Campanha, CampanhaAdapter.Campa
         private TextView tvTitulo;
         private TextView tvDescricao;
         private TextView tvLocal;
-        private NavController navController;
         public CampanhaViewHolder(@NonNull View itemView) {
             super(itemView);
 
@@ -69,9 +68,6 @@ public class CampanhaAdapter extends ListAdapter<Campanha, CampanhaAdapter.Campa
             tvDescricao = itemView.findViewById(R.id.tv_item_descricao);
             tvLocal = itemView.findViewById(R.id.tv_item_local);
 
-            // Encontra o NavController a partir da view
-            navController = Navigation.findNavController(itemView);
-
             // Adiciona um clique no card
             itemView.setOnClickListener(v -> {
                 // Pega a posição segura (evita crashes)
@@ -79,13 +75,15 @@ public class CampanhaAdapter extends ListAdapter<Campanha, CampanhaAdapter.Campa
                 if (position != RecyclerView.NO_POSITION) {
                     // Pega o objeto da campanha clicada
                     Campanha campanhaClicada = getItem(position);
-
+                    // BUSCA DO NAVCONTROLLER
+                    // (Use "v", que é a View que foi clicada)
+                    NavController navController = Navigation.findNavController(v);
                     // --- NAVEGAÇÃO ---
-                    // 1. Cria o "pacote" de dados para enviar
+                    // Cria o "pacote" de dados para enviar
                     Bundle bundle = new Bundle();
                     bundle.putString("campanhaId", campanhaClicada.getId()); // Passa o ID
 
-                    // 2. Navega para a tela de detalhes, levando o pacote
+                    // Navega para a tela de detalhes, levando o pacote
                     navController.navigate(R.id.action_feedFragment_to_detalheCampanhaFragment, bundle);
                 }
             });
@@ -96,7 +94,6 @@ public class CampanhaAdapter extends ListAdapter<Campanha, CampanhaAdapter.Campa
             tvTitulo.setText(campanha.getTitulo());
             tvDescricao.setText(campanha.getDescricao());
 
-            // Exemplo de como juntar dados (pode ajustar)
             if (campanha.getNomePaciente() != null && !campanha.getNomePaciente().isEmpty()) {
                 tvLocal.setText("Paciente: " + campanha.getNomePaciente() + " | Local: " + campanha.getNomeHemocentro());
             } else {
