@@ -1,9 +1,12 @@
 package com.upx.doando_mais.ui.feed.adapter;
 // Para a lista do RecycleView
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
@@ -57,7 +60,7 @@ public class CampanhaAdapter extends ListAdapter<Campanha, CampanhaAdapter.Campa
         private TextView tvTitulo;
         private TextView tvDescricao;
         private TextView tvLocal;
-
+        private NavController navController;
         public CampanhaViewHolder(@NonNull View itemView) {
             super(itemView);
 
@@ -66,13 +69,24 @@ public class CampanhaAdapter extends ListAdapter<Campanha, CampanhaAdapter.Campa
             tvDescricao = itemView.findViewById(R.id.tv_item_descricao);
             tvLocal = itemView.findViewById(R.id.tv_item_local);
 
-            // (Opcional) Adiciona um clique no card
+            // Encontra o NavController a partir da view
+            navController = Navigation.findNavController(itemView);
+
+            // Adiciona um clique no card
             itemView.setOnClickListener(v -> {
+                // Pega a posição segura (evita crashes)
                 int position = getBindingAdapterPosition();
                 if (position != RecyclerView.NO_POSITION) {
+                    // Pega o objeto da campanha clicada
                     Campanha campanhaClicada = getItem(position);
-                    // TODO: Navegar para a tela de Detalhes da Campanha
-                    // Ex: navController.navigate(R.id.action_feed_to_detalhe);
+
+                    // --- NAVEGAÇÃO ---
+                    // 1. Cria o "pacote" de dados para enviar
+                    Bundle bundle = new Bundle();
+                    bundle.putString("campanhaId", campanhaClicada.getId()); // Passa o ID
+
+                    // 2. Navega para a tela de detalhes, levando o pacote
+                    navController.navigate(R.id.action_feedFragment_to_detalheCampanhaFragment, bundle);
                 }
             });
         }
