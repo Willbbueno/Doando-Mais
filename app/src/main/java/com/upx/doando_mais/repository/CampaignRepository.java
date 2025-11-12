@@ -34,6 +34,7 @@ public class CampaignRepository {
 
     // LiveData para a campanha específica (Tela de Detalhe)
     private MutableLiveData<Campanha> campanhaDetalheLiveData;
+    private MutableLiveData<List<Campanha>> minhasCampanhasLiveData;
 
     public CampaignRepository() {
         this.db = FirebaseFirestore.getInstance();
@@ -42,6 +43,7 @@ public class CampaignRepository {
         this.erroLiveData = new MutableLiveData<>();
         this.criacaoCampanhaSucessoLiveData = new MutableLiveData<>();
         this.campanhaDetalheLiveData = new MutableLiveData<>();
+        this.minhasCampanhasLiveData = new MutableLiveData<>();
     }
 
     // --- Getters para o ViewModel ---
@@ -55,6 +57,9 @@ public class CampaignRepository {
     public LiveData<Boolean> getCriacaoCampanhaSucessoLiveData() { return criacaoCampanhaSucessoLiveData; }
     public LiveData<Campanha> getCampanhaDetalheLiveData() {
         return campanhaDetalheLiveData;
+    }
+    public LiveData<List<Campanha>> getMinhasCampanhasLiveData() {
+        return minhasCampanhasLiveData;
     }
     // --- Métodos de Acesso ao Banco ---
 
@@ -157,4 +162,77 @@ public class CampaignRepository {
                     }
                 });
     }
+    /**
+     * Busca, em tempo real, apenas as campanhas criadas pelo usuário logado.
+     * Usado pela tela de Acompanhamento.
+     *
+     * @param uidCriador O ID do usuário logado.
+     */
+    public void buscarMinhasCampanhas(String uidCriador) {
+        if (uidCriador == null || uidCriador.isEmpty()) {
+            // Se o UID for nulo, retorna uma lista vazia
+            minhasCampanhasLiveData.postValue(new ArrayList<>());
+            return;
+        }
+
+        // Query para buscar campanhas onde "criadorUid" == uidCriador
+        // Ordena pelas mais recentes
+        campanhasCollection.whereEqualTo("criadorUid", uidCriador)
+                .orderBy("dataCriacao", Query.Direction.DESCENDING)
+                .addSnapshotListener((value, error) -> {
+                    if (error != null) {
+                        Log.w(TAG, "Erro ao buscar 'minhas campanhas'.", error);
+                        erroLiveData.postValue("Erro ao carregar suas campanhas: " + error.getMessage());
+                        return;
+                    }
+
+                    if (value != null) {
+                        // Sucesso! Converte os documentos
+                        List<Campanha> listaCampanhas = new ArrayList<>();
+                        for (QueryDocumentSnapshot document : value) {
+                            Campanha campanha = document.toObject(Campanha.class);
+                            campanha.setId(document.getId());
+                            listaCampanhas.add(campanha);
+                        }
+                        // Envia a lista filtrada para o LiveData
+                        minhasCampanhasLiveData.postValue(listaCampanhas);
+                    }
+                });
+    }
+    /**
+     * Exclui uma campanha específica do Firestore.
+     * @param campanhaId O ID do documento a ser excluído.
+     */
+    public void excluirCampanha(String campanhaId) {
+        if (campanhaId == null || campanhaId.isEmpty()) {
+            erroLiveData.postValue("ID da campanha inválido para exclusão.");
+            return;
+        }
+
+        campanhasCollection.document(campanhaId).delete()
+                .addOnSuccessListener(aVoid -> {
+                    Log.d(TAG, "Campanha excluída com sucesso: " + campanhaId);
+
+                    // Pega a lista atual que está no LiveData
+                    List<Campanha> listaAtual = minhasCampanhasLiveData.getValue();
+
+                    // Verifica se a lista não é nula
+                    if (listaAtual != null) {
+                        // 1. Cria uma nova lista (isto é crucial para o LiveData e o Adapter notarem a mudança após a exclusão)
+                        List<Campanha> novaLista = new ArrayList<>(listaAtual);
+
+                        // 2. Remove o item da nova lista usando o ID
+                        novaLista.removeIf(campanha -> campanha.getId().equals(campanhaId));
+
+                        // 3. Posta a nova lista atualizada.
+                        minhasCampanhasLiveData.postValue(novaLista);
+                    }
+
+                })
+                .addOnFailureListener(e -> {
+                    Log.w(TAG, "Erro ao excluir campanha", e);
+                    erroLiveData.postValue("Erro ao excluir campanha: " + e.getMessage());
+                });
+    }
 }
+

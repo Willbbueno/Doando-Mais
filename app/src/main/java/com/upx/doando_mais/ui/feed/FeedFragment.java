@@ -1,6 +1,8 @@
 package com.upx.doando_mais.ui.feed;
 
 import android.os.Bundle;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +12,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
+
+import com.upx.doando_mais.R;
 import com.upx.doando_mais.databinding.FragmentFeedBinding; // Importe o ViewBinding
 import com.upx.doando_mais.ui.feed.adapter.CampanhaAdapter; // Importe o Adapter
 
@@ -53,7 +57,19 @@ public class FeedFragment extends Fragment {
     }
 
     private void setupRecyclerView() {
-        adapter = new CampanhaAdapter();
+        // Listner para fazer o click
+        adapter = new CampanhaAdapter(campanha -> {
+            // 1. Encontra o NavController
+            NavController navController = Navigation.findNavController(requireView());
+
+            // 2. Cria o "pacote"
+            Bundle bundle = new Bundle();
+            bundle.putString("campanhaId", campanha.getId());
+
+            // 3. Navega
+            navController.navigate(R.id.action_feedFragment_to_detalheCampanhaFragment, bundle);
+        });
+
         binding.rvCampanhas.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.rvCampanhas.setAdapter(adapter);
     }
