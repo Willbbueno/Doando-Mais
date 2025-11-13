@@ -106,6 +106,30 @@ public class AuthViewModel extends AndroidViewModel {
         authRepository.logout();
     }
 
+    /**
+     * Pega os dados atualizados do formulário de perfil e manda o repositório salvar.
+     * Reutiliza a lógica de "salvar" (set) do UserRepository.
+     *
+     * @param usuarioAtualizado O objeto Usuario com os dados modificados.
+     */
+    public void atualizarDadosUsuario(Usuario usuarioAtualizado) {
+        // Pega o usuário logado (FirebaseUser)
+        FirebaseUser user = usuarioLogadoLiveData.getValue();
+        if (user != null) {
+            // Garante que o UID e o Email (que não mudam) estejam corretos
+            usuarioAtualizado.setUid(user.getUid());
+            usuarioAtualizado.setEmail(user.getEmail()); // Garante que o email não foi alterado
+
+            // Chama o método de salvar do repositório, que vai ATUALIZAR
+            // o documento existente.
+            userRepository.salvarUsuarioAdicional(user.getUid(), usuarioAtualizado);
+        } else {
+            // Se o usuário for nulo, informa o erro (raro, mas seguro)
+            userRepository.getErroLiveData().postValue("Usuário não está logado. Não foi possível salvar.");
+        }
+    }
+
+
     //GETTERS
 
     public LiveData<FirebaseUser> getUsuarioLogadoLiveData() {
