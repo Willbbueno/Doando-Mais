@@ -12,6 +12,10 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import com.google.firebase.auth.FirebaseUser;
 import android.app.AlertDialog;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+
+import com.upx.doando_mais.R;
 import com.upx.doando_mais.data.model.Campanha;
 import com.upx.doando_mais.databinding.FragmentAcompanhamentoBinding;
 import com.upx.doando_mais.ui.auth.AuthViewModel;
@@ -119,6 +123,9 @@ public class AcompanhamentoFragment extends Fragment {
     /**
      * Mostra um diálogo com as opções "Editar" e "Excluir"
      */
+    /**
+     * Mostra um diálogo com as opções "Editar" e "Excluir"
+     */
     private void mostrarOpcoesDialog(Campanha campanha) {
         // Lista de opções
         CharSequence[] opcoes = {"Editar Campanha", "Excluir Campanha"};
@@ -128,8 +135,18 @@ public class AcompanhamentoFragment extends Fragment {
         builder.setItems(opcoes, (dialog, which) -> {
             if (which == 0) {
                 // Opção 0: "Editar"
-                // TODO: Navegar para uma nova tela "EditarCampanhaFragment"
-                Toast.makeText(getContext(), "Função 'Editar' ainda não implementada.", Toast.LENGTH_SHORT).show();
+                // --- INÍCIO DA ATUALIZAÇÃO ---
+                // 1. Encontra o NavController
+                NavController navController = Navigation.findNavController(requireView());
+
+                // 2. Cria o "pacote" de dados
+                Bundle bundle = new Bundle();
+                bundle.putString("campanhaId", campanha.getId()); // Passa o ID
+
+                // 3. Navega para a nova tela de edição, levando o ID
+                navController.navigate(R.id.action_acompanhamentoFragment_to_editarCampanhaFragment, bundle);
+                // --- FIM DA ATUALIZAÇÃO ---
+
             } else if (which == 1) {
                 // Opção 1: "Excluir"
                 mostrarConfirmacaoExcluir(campanha);
@@ -137,7 +154,6 @@ public class AcompanhamentoFragment extends Fragment {
         });
         builder.show();
     }
-
     /**
      * Mostra um 2º diálogo para confirmar a exclusão
      */

@@ -35,6 +35,7 @@ public class CampaignRepository {
     // LiveData para a campanha específica (Tela de Detalhe)
     private MutableLiveData<Campanha> campanhaDetalheLiveData;
     private MutableLiveData<List<Campanha>> minhasCampanhasLiveData;
+    private MutableLiveData<Boolean> atualizacaoCampanhaSucessoLiveData;
 
     public CampaignRepository() {
         this.db = FirebaseFirestore.getInstance();
@@ -44,6 +45,8 @@ public class CampaignRepository {
         this.criacaoCampanhaSucessoLiveData = new MutableLiveData<>();
         this.campanhaDetalheLiveData = new MutableLiveData<>();
         this.minhasCampanhasLiveData = new MutableLiveData<>();
+        this.atualizacaoCampanhaSucessoLiveData = new MutableLiveData<>();
+
     }
 
     // --- Getters para o ViewModel ---
@@ -55,12 +58,9 @@ public class CampaignRepository {
         return erroLiveData;
     }
     public LiveData<Boolean> getCriacaoCampanhaSucessoLiveData() { return criacaoCampanhaSucessoLiveData; }
-    public LiveData<Campanha> getCampanhaDetalheLiveData() {
-        return campanhaDetalheLiveData;
-    }
-    public LiveData<List<Campanha>> getMinhasCampanhasLiveData() {
-        return minhasCampanhasLiveData;
-    }
+    public LiveData<Campanha> getCampanhaDetalheLiveData() { return campanhaDetalheLiveData;}
+    public LiveData<List<Campanha>> getMinhasCampanhasLiveData() {return minhasCampanhasLiveData;}
+    public LiveData<Boolean> getAtualizacaoCampanhaSucessoLiveData() { return atualizacaoCampanhaSucessoLiveData;}
     // --- Métodos de Acesso ao Banco ---
 
     /**
@@ -232,6 +232,33 @@ public class CampaignRepository {
                 .addOnFailureListener(e -> {
                     Log.w(TAG, "Erro ao excluir campanha", e);
                     erroLiveData.postValue("Erro ao excluir campanha: " + e.getMessage());
+                });
+    }
+
+    /**
+     * Atualiza uma campanha existente no Firestore.
+     * @param campanhaAtualizada O objeto Campanha com os dados modificados.
+     */
+    public void atualizarCampanha(Campanha campanhaAtualizada) {
+        String id = campanhaAtualizada.getId();
+        if (id == null || id.isEmpty()) {
+            erroLiveData.postValue("ID da campanha é inválido. Não é possível atualizar.");
+            return;
+        }
+
+        // Limpa o estado anterior
+        atualizacaoCampanhaSucessoLiveData.postValue(false);
+        erroLiveData.postValue(null);
+
+        // Usa .document(id).set(objeto) para sobrescrever os dados da campanha
+        campanhasCollection.document(id).set(campanhaAtualizada)
+                .addOnSuccessListener(aVoid -> {
+                    Log.d(TAG, "Campanha atualizada com sucesso: " + id);
+                    atualizacaoCampanhaSucessoLiveData.postValue(true);
+                })
+                .addOnFailureListener(e -> {
+                    Log.w(TAG, "Erro ao atualizar campanha", e);
+                    erroLiveData.postValue("Erro ao atualizar: " + e.getMessage());
                 });
     }
 }

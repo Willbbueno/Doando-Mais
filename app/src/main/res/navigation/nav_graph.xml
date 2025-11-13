@@ -5,101 +5,103 @@
     android:id="@+id/nav_graph"
     app:startDestination="@id/loginFragment">
 
-    <!-- LOGIN -->
     <fragment
         android:id="@+id/loginFragment"
         android:name="com.upx.doando_mais.ui.auth.LoginFragment"
         android:label="LoginFragment"
         tools:layout="@layout/fragment_login">
-
         <action
             android:id="@+id/action_loginFragment_to_feedFragment"
             app:destination="@id/feedFragment"
             app:popUpTo="@id/loginFragment"
             app:popUpToInclusive="true" />
-
         <action
             android:id="@+id/action_loginFragment_to_cadastroFragment"
             app:destination="@id/cadastroFragment" />
     </fragment>
 
-    <!-- CADASTRO -->
     <fragment
         android:id="@+id/cadastroFragment"
         android:name="com.upx.doando_mais.ui.auth.CadastroFragment"
         android:label="CadastroFragment"
         tools:layout="@layout/fragment_cadastro">
-
         <action
             android:id="@+id/action_cadastroFragment_to_feedFragment"
             app:destination="@id/feedFragment"
-            app:popUpTo="@id/cadastroFragment"
+            app:popUpTo="@id/loginFragment"
             app:popUpToInclusive="true" />
     </fragment>
 
-    <!-- FEED -->
     <fragment
         android:id="@+id/feedFragment"
         android:name="com.upx.doando_mais.ui.feed.FeedFragment"
         android:label="FeedFragment"
         tools:layout="@layout/fragment_feed">
-
-        <!-- Navega para Detalhe da Campanha -->
         <action
             android:id="@+id/action_feedFragment_to_detalheCampanhaFragment"
             app:destination="@id/detalheCampanhaFragment" />
     </fragment>
 
-    <!-- ACOMPANHAMENTO -->
     <fragment
         android:id="@+id/acompanhamentoFragment"
         android:name="com.upx.doando_mais.ui.acompanhamento.AcompanhamentoFragment"
         android:label="AcompanhamentoFragment"
-        tools:layout="@layout/fragment_acompanhamento" />
+        tools:layout="@layout/fragment_acompanhamento" >
 
-    <!-- CRIAR CAMPANHA -->
+        <action
+            android:id="@+id/action_acompanhamentoFragment_to_editarCampanhaFragment"
+            app:destination="@id/editarCampanhaFragment" />
+
+    </fragment>
+
     <fragment
         android:id="@+id/criarCampanhaFragment"
         android:name="com.upx.doando_mais.ui.campanha_criar.CriarCampanhaFragment"
         android:label="CriarCampanhaFragment"
         tools:layout="@layout/fragment_criar_campanha" />
 
-    <!-- ORIENTAÇÕES -->
     <fragment
         android:id="@+id/orientacoesFragment"
         android:name="com.upx.doando_mais.ui.orientacoes.OrientacoesFragment"
         android:label="OrientacoesFragment"
         tools:layout="@layout/fragment_orientacoes" />
 
-    <!-- PERFIL -->
     <fragment
         android:id="@+id/perfilFragment"
         android:name="com.upx.doando_mais.ui.perfil.PerfilFragment"
         android:label="PerfilFragment"
         tools:layout="@layout/fragment_perfil">
-
         <action
             android:id="@+id/action_perfilFragment_to_atualizarCadastroFragment"
             app:destination="@id/atualizarCadastroFragment" />
     </fragment>
 
-    <!-- ATUALIZAR CADASTRO -->
     <fragment
         android:id="@+id/atualizarCadastroFragment"
         android:name="com.upx.doando_mais.ui.perfil.AtualizarCadastroFragment"
         android:label="AtualizarCadastroFragment"
         tools:layout="@layout/fragment_atualizar_cadastro" />
 
-    <!-- DETALHE CAMPANHA -->
     <fragment
         android:id="@+id/detalheCampanhaFragment"
         android:name="com.upx.doando_mais.ui.campanha_detalhe.DetalheCampanhaFragment"
         android:label="DetalheCampanhaFragment"
         tools:layout="@layout/fragment_detalhe_campanha">
+        <argument
+            android:name="campanhaId"
+            app:argType="string" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/editarCampanhaFragment"
+        android:name="com.upx.doando_mais.ui.campanha_editar.EditarCampanhaFragment"
+        android:label="EditarCampanhaFragment"
+        tools:layout="@layout/fragment_editar_campanha">
 
         <argument
             android:name="campanhaId"
             app:argType="string" />
+
     </fragment>
 
 </navigation>
