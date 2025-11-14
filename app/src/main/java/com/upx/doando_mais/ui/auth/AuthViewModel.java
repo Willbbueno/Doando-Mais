@@ -88,7 +88,8 @@ public class AuthViewModel extends AndroidViewModel {
         // Cria o objeto Usuario para salvar no Firestore (ainda sem o UID)
         this.usuarioPendente = new Usuario(
                 null, nome, email, cpf, sexo, dataNasc, cidade, estado,
-                tipoSanguineo, perfil, 0, null
+                tipoSanguineo, perfil, 0, null,
+                null, null // nulos para telefone e urlFoto
         );
 
         // Inicia o Passo 1: Criação no Firebase Auth
