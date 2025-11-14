@@ -15,7 +15,8 @@ public class Usuario {
     private String tipoSanguineo;
     private String perfil; // "Doador", "Organização", "Mobilizador".
     private int quantidadeDoacoes; // Contador de doações realizadas.
-    private String fotoUrl;
+    private String telefone;
+    private String urlFotoPerfil;
 
 
     // Construtor vazio - obrigatório para utilizar no Firebase.
@@ -23,7 +24,10 @@ public class Usuario {
     public Usuario(){}
 
     // Construtor com parâmetros (útil para criar novos usuários no código)
-    public Usuario(String uid, String nomeCompleto, String email, String cpf, String sexo, String dataNascimento, String cidade, String estado, String tipoSanguineo, String perfil, int quantidadeDoacoes, String fotoUrl) {
+    // Construtor com parâmetros (CORRIGIDO)
+    public Usuario(String uid, String nomeCompleto, String email, String cpf, String sexo,
+                   String dataNascimento, String cidade, String estado, String tipoSanguineo,
+                   String perfil, int quantidadeDoacoes, String urlFotoPerfil, String telefone) {
         this.uid = uid;
         this.nomeCompleto = nomeCompleto;
         this.email = email;
@@ -35,7 +39,11 @@ public class Usuario {
         this.tipoSanguineo = tipoSanguineo;
         this.perfil = perfil;
         this.quantidadeDoacoes = quantidadeDoacoes;
-        this.fotoUrl = fotoUrl;
+        this.urlFotoPerfil = urlFotoPerfil;
+        this.telefone = telefone;
+    }
+
+    public Usuario(Object o, String nome, String email, String cpf, String sexo, String dataNasc, String cidade, String estado, String tipoSanguineo, String perfil, int i, Object o1, Object o2, Object o3) {
     }
 
     // Construtores, getters e setters
@@ -129,11 +137,19 @@ public class Usuario {
         this.quantidadeDoacoes = quantidadeDoacoes;
     }
 
-    public String getFotoUrl() {
-        return fotoUrl;
+    public String getTelefone() {
+        return telefone;
     }
 
-    public void setFotoUrl(String fotoUrl) {
-        this.fotoUrl = fotoUrl;
+    public void setTelefone(String telefone) {
+        this.telefone = telefone;
+    }
+
+    public String getUrlFotoPerfil() {
+        return urlFotoPerfil;
+    }
+
+    public void setUrlFotoPerfil(String urlFotoPerfil) {
+        this.urlFotoPerfil = urlFotoPerfil;
     }
 }
