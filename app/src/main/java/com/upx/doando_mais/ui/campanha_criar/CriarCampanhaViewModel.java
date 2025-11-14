@@ -54,4 +54,12 @@ public class CriarCampanhaViewModel extends ViewModel {
         // Simplesmente repassa a tarefa para o repositório
         campaignRepository.criarCampanha(novaCampanha);
     }
+
+    /**
+     * Pede ao repositório para resetar o estado de sucesso.
+     * O Fragment chama isso após observar o sucesso.
+     */
+    public void resetarEstadoDeSucesso() {
+        campaignRepository.resetarSucessoCriacao();
+    }
 }

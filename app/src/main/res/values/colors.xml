@@ -15,4 +15,7 @@
     <color name="colorTextPrimary">#212121</color>
     <color name="doando_error_red">#D32F2F</color>
     <color name="colorTextSecondary">#757575</color>
+    <color name="card_paciente_bg">#FFEBEE</color>
+    <color name="card_publica_bg">#E0F7FA</color> ```
+
 </resources>

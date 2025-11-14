@@ -261,5 +261,15 @@ public class CampaignRepository {
                     erroLiveData.postValue("Erro ao atualizar: " + e.getMessage());
                 });
     }
+
+    /**
+     * Reseta o LiveData de sucesso da criação para 'false'.
+     * Isso evita que o Fragmento reaja a um sucesso antigo.
+     */
+    public void resetarSucessoCriacao() {
+        if (criacaoCampanhaSucessoLiveData != null) {
+            criacaoCampanhaSucessoLiveData.postValue(false);
+        }
+    }
 }
 
