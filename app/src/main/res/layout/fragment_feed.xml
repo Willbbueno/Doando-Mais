@@ -40,10 +40,9 @@
         android:textColor="@color/white"
         android:textSize="20sp"
         android:textStyle="bold"
-        app:layout_centerYtocenterY="@+id/iv_user_photo"
-        app:layout_constraintStart_toEndOf="@id/iv_user_photo"
         app:layout_constraintTop_toTopOf="@id/iv_user_photo"
-        app:layout_constraintBottom_toBottomOf="@id/iv_user_photo" />
+        app:layout_constraintBottom_toBottomOf="@id/iv_user_photo"
+        app:layout_constraintStart_toEndOf="@id/iv_user_photo" />
 
     <LinearLayout
         android:layout_width="wrap_content"

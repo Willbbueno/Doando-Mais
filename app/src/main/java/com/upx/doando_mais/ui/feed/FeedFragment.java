@@ -50,9 +50,9 @@ public class FeedFragment extends Fragment {
 
         // 4. Manda o ViewModel carregar os dados
         // (Mostra o "Carregando...")
-        binding.progressBar.setVisibility(View.VISIBLE);
+        // binding.progressBar.setVisibility(View.VISIBLE);
         binding.rvCampanhas.setVisibility(View.GONE);
-        binding.tvFeedVazio.setVisibility(View.GONE);
+        // binding.tvFeedVazio.setVisibility(View.GONE);
         feedViewModel.carregarCampanhas();
     }
 
@@ -77,26 +77,27 @@ public class FeedFragment extends Fragment {
     private void setupObservers() {
         // Observa a lista de campanhas
         feedViewModel.getCampanhasLiveData().observe(getViewLifecycleOwner(), campanhas -> {
-            binding.progressBar.setVisibility(View.GONE); // Esconde o "Carregando"
+
+            // binding.progressBar.setVisibility(View.GONE); // Esconde o "Carregando"
 
             if (campanhas != null && !campanhas.isEmpty()) {
                 // Se a lista não for vazia, mostra a lista
                 adapter.submitList(campanhas);
                 binding.rvCampanhas.setVisibility(View.VISIBLE);
-                binding.tvFeedVazio.setVisibility(View.GONE);
+               // binding.tvFeedVazio.setVisibility(View.GONE);
             } else {
                 // Se for vazia, mostra a mensagem "Feed Vazio"
                 binding.rvCampanhas.setVisibility(View.GONE);
-                binding.tvFeedVazio.setVisibility(View.VISIBLE);
+                //binding.tvFeedVazio.setVisibility(View.VISIBLE);
             }
         });
 
         // Observa erros
         feedViewModel.getErroLiveData().observe(getViewLifecycleOwner(), erro -> {
             if (erro != null) {
-                binding.progressBar.setVisibility(View.GONE);
+               // binding.progressBar.setVisibility(View.GONE);
                 Toast.makeText(getContext(), erro, Toast.LENGTH_LONG).show();
-                binding.tvFeedVazio.setVisibility(View.VISIBLE);
+                //binding.tvFeedVazio.setVisibility(View.VISIBLE);
             }
         });
     }
