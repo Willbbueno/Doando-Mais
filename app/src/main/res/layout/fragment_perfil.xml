@@ -4,117 +4,276 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?attr/colorOnPrimary"
     tools:context=".ui.perfil.PerfilFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/tv_label_nome"
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/iv_perfil_foto"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_marginTop="32dp"
+            android:padding="4dp"
+            android:scaleType="centerCrop"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Full"
+            app:strokeColor="?attr/colorPrimary"
+            app:strokeWidth="3dp"
+            tools:src="@tools:sample/avatars" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_editar_foto"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Nome Completo"
-            android:textAppearance="?attr/textAppearanceCaption"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:src="@drawable/ic_camera_edit"
+            app:backgroundTint="?attr/colorSurfaceVariant"
+            app:fabSize="mini"
+            app:layout_constraintBottom_toBottomOf="@id/iv_perfil_foto"
+            app:layout_constraintEnd_toEndOf="@id/iv_perfil_foto"
+            app:layout_constraintHorizontal_bias="0.95"
+            app:layout_constraintStart_toStartOf="@id/iv_perfil_foto"
+            app:layout_constraintTop_toBottomOf="@id/iv_perfil_foto"
+            app:layout_constraintVertical_bias="0.95"
+            app:tint="?attr/colorPrimary" />
 
         <TextView
             android:id="@+id/tv_perfil_nome"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:textAppearance="?attr/textAppearanceHeadline6"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_label_nome"
-            tools:text="Mariana Oliveira da Silva" />
-
-        <TextView
-            android:id="@+id/tv_label_email"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="E-mail"
-            android:textAppearance="?attr/textAppearanceCaption"
+            android:textAppearance="?attr/textAppearanceHeadline5"
+            android:textColor="?attr/colorOnSurface"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_perfil_nome" />
+            app:layout_constraintTop_toBottomOf="@id/iv_perfil_foto"
+            tools:text="William Borges Bueno" />
 
         <TextView
             android:id="@+id/tv_perfil_email"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:textAppearance="?attr/textAppearanceBody1"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_label_email"
-            tools:text="mariana.ods@gmail.com" />
-
-        <TextView
-            android:id="@+id/tv_label_cpf"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="CPF"
-            android:textAppearance="?attr/textAppearanceCaption"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_perfil_email" />
-
-        <TextView
-            android:id="@+id/tv_perfil_cpf"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:textAppearance="?attr/textAppearanceBody1"
+            android:textColor="?attr/colorOnSurfaceVariant"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_label_cpf"
-            tools:text="123.456.789-00" />
+            app:layout_constraintTop_toBottomOf="@id/tv_perfil_nome"
+            tools:text="william.b.bueno@gmail.com" />
 
-        <TextView
-            android:id="@+id/tv_label_tipo_sanguineo"
-            android:layout_width="wrap_content"
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_detalhes_usuario"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            app:cardElevation="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_perfil_email"
+            app:strokeColor="?attr/colorOutlineVariant"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Telefone"
+                    android:textAppearance="?attr/textAppearanceCaption" />
+                <TextView
+                    android:id="@+id/tv_perfil_telefone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?attr/textAppearanceBody1"
+                    android:textColor="?attr/colorOnSurface"
+                    tools:text="(15) 99123-4567" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="CPF"
+                    android:textAppearance="?attr/textAppearanceCaption" />
+                <TextView
+                    android:id="@+id/tv_perfil_cpf"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?attr/textAppearanceBody1"
+                    android:textColor="?attr/colorOnSurface"
+                    tools:text="***.456.789-**" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:orientation="horizontal">
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Data de Nascimento"
+                            android:textAppearance="?attr/textAppearanceCaption" />
+                        <TextView
+                            android:id="@+id/tv_perfil_data_nasc"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?attr/textAppearanceBody1"
+                            android:textColor="?attr/colorOnSurface"
+                            tools:text="01/01/1990" />
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Sexo"
+                            android:textAppearance="?attr/textAppearanceCaption" />
+                        <TextView
+                            android:id="@+id/tv_perfil_sexo"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?attr/textAppearanceBody1"
+                            android:textColor="?attr/colorOnSurface"
+                            tools:text="Masculino" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="Localização"
+                    android:textAppearance="?attr/textAppearanceCaption" />
+                <TextView
+                    android:id="@+id/tv_perfil_localizacao"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?attr/textAppearanceBody1"
+                    android:textColor="?attr/colorOnSurface"
+                    tools:text="Sorocaba - SP" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="Membro desde"
+                    android:textAppearance="?attr/textAppearanceCaption" />
+                <TextView
+                    android:id="@+id/tv_perfil_membro_desde"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?attr/textAppearanceBody1"
+                    android:textColor="?attr/colorOnSurface"
+                    tools:text="10 de Novembro, 2025" />
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_atualizar_cadastro"
+            style="@style/Widget.Material3.Button.TextButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
             android:layout_marginTop="16dp"
-            android:text="Tipo Sanguíneo"
-            android:textAppearance="?attr/textAppearanceCaption"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_perfil_cpf" />
-
-        <TextView
-            android:id="@+id/tv_perfil_tipo_sanguineo"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:textAppearance="?attr/textAppearanceBody1"
+            android:text="Atualizar Cadastro"
+            android:textColor="?attr/colorOnSurface"
+            android:paddingStart="16dp"
+            android:gravity="start|center_vertical"
+            app:icon="@drawable/ic_edit_profile"
+            app:iconPadding="16dp"
+            app:iconTint="?attr/colorOnSurfaceVariant"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_label_tipo_sanguineo"
-            tools:text="O+" />
+            app:layout_constraintTop_toBottomOf="@id/card_detalhes_usuario" />
 
-        <Button
-            android:id="@+id/btn_editar_cadastro"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_alterar_senha"
+            style="@style/Widget.Material3.Button.TextButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:text="Editar Cadastro"
+            android:layout_marginHorizontal="16dp"
+            android:text="Alterar Senha"
+            android:textColor="?attr/colorOnSurface"
+            android:paddingStart="16dp"
+            android:gravity="start|center_vertical"
+            app:icon="@drawable/ic_lock_reset"
+            app:iconPadding="16dp"
+            app:iconTint="?attr/colorOnSurfaceVariant"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_perfil_tipo_sanguineo" />
+            app:layout_constraintTop_toBottomOf="@id/btn_atualizar_cadastro" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_sobre_app"
+            style="@style/Widget.Material3.Button.TextButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:text="Sobre o Aplicativo"
+            android:textColor="?attr/colorOnSurface"
+            android:paddingStart="16dp"
+            android:gravity="start|center_vertical"
+            app:icon="@drawable/ic_info_outline"
+            app:iconPadding="16dp"
+            app:iconTint="?attr/colorOnSurfaceVariant"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btn_alterar_senha" />
+
+        <com.google.android.material.divider.MaterialDivider
+            android:id="@+id/divider"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_margin="16dp"
+            app:layout_constraintTop_toBottomOf="@id/btn_sobre_app"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_excluir_conta"
+            style="@style/Widget.Material3.Button.TextButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:text="Excluir Conta"
+            android:textColor="@color/doando_error_red"
+            android:paddingStart="16dp"
+            android:gravity="start|center_vertical"
+            app:icon="@drawable/ic_delete_forever"
+            app:iconPadding="16dp"
+            app:iconTint="@color/doando_error_red"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/divider" />
+
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_sair"
+            style="@style/Widget.MaterialComponents.Button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_margin="16dp"
             android:text="Sair (Logout)"
-            android:backgroundTint="?attr/colorError"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btn_editar_cadastro" />
+            app:layout_constraintTop_toBottomOf="@id/btn_excluir_conta" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 </ScrollView>

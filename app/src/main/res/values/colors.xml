@@ -13,5 +13,6 @@
     <color name="colorCardPaciente">#FFEBEE</color>
     <color name="colorCardPublica">#E0F7FA</color>
     <color name="colorTextPrimary">#212121</color>
+    <color name="doando_error_red">#D32F2F</color>
     <color name="colorTextSecondary">#757575</color>
 </resources>
