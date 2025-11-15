@@ -36,7 +36,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:text="Olá,\nUsuário"
+        tools:text="Olá,\nWilliam Borges"
         android:textColor="@color/white"
         android:textSize="20sp"
         android:textStyle="bold"
@@ -61,10 +61,10 @@
             app:tint="@color/white" />
 
         <TextView
-            android:layout_width="wrap_content"
+            android:id="@+id/tv_header_tipo_sanguineo" android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
-            android:text="O+"
+            tools:text="O+"
             android:textColor="@color/white"
             android:textSize="28sp"
             android:textStyle="bold" />
@@ -104,19 +104,19 @@
                 android:gravity="center_vertical">
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:id="@+id/tv_header_doacoes_count" android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="2"
+                    tools:text="2"
                     android:textSize="34sp"
                     android:textStyle="bold"
                     android:textColor="@color/doando_red_primary" />
 
                 <TextView
-                    android:layout_width="0dp"
+                    android:id="@+id/tv_header_doacoes_text" android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginStart="8dp"
-                    android:text="vidas salvas\naté agora!"
+                    tools:text="vidas salvas\naté agora!"
                     android:textSize="14sp"
                     android:textColor="@color/colorTextPrimary" />
 
@@ -128,6 +128,7 @@
                     android:alpha="0.2"/>
             </LinearLayout>
         </LinearLayout>
+
     </com.google.android.material.card.MaterialCardView>
 
     <TextView
@@ -144,7 +145,7 @@
         app:layout_constraintTop_toBottomOf="@id/card_stats" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_filter"
+        android:id="@+id/btnFiltro"
         style="@style/Widget.MaterialComponents.Button.TextButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
