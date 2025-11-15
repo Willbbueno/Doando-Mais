@@ -1,36 +1,42 @@
 package com.upx.doando_mais.ui.feed;
 
 import android.os.Bundle;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView; // Importa a classe TextView
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.upx.doando_mais.R;
-import com.upx.doando_mais.databinding.FragmentFeedBinding; // Importe o ViewBinding
-import com.upx.doando_mais.ui.feed.adapter.CampanhaAdapter; // Importe o Adapter
+import com.upx.doando_mais.data.model.Usuario;
+import com.upx.doando_mais.databinding.FragmentFeedBinding; // Binding para o layout da ONDA
+import com.upx.doando_mais.ui.auth.AuthViewModel;
+import com.upx.doando_mais.ui.feed.adapter.CampanhaAdapter;
+import com.upx.doando_mais.ui.feed.filter.FilterBottomSheetFragment; // Importe o Filtro
 
-public class FeedFragment extends Fragment {
+// --- Adicione a implementação da interface ---
+public class FeedFragment extends Fragment implements FilterBottomSheetFragment.FilterListener {
 
     private FeedViewModel feedViewModel;
-    private FragmentFeedBinding binding; // Binding para o fragment_feed.xml
-    private CampanhaAdapter adapter; // Nosso adapter da lista
+    private AuthViewModel authViewModel; // Para o cabeçalho
+    private FragmentFeedBinding binding;
+    private CampanhaAdapter adapter;
 
-    public FeedFragment() {
-        // Required empty public constructor
-    }
+    private String filtroTipoSanguineoAtual = null;
+    private String filtroCidadeAtual = null;
+
+    public FeedFragment() {}
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Infla o layout usando ViewBinding
         binding = FragmentFeedBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
@@ -39,8 +45,9 @@ public class FeedFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // 1. Inicializa o ViewModel
+        // 1. Inicializa os ViewModels
         feedViewModel = new ViewModelProvider(this).get(FeedViewModel.class);
+        authViewModel = new ViewModelProvider(requireActivity()).get(AuthViewModel.class);
 
         // 2. Configura o Adapter e o RecyclerView
         setupRecyclerView();
@@ -48,25 +55,18 @@ public class FeedFragment extends Fragment {
         // 3. Configura os Observadores
         setupObservers();
 
-        // 4. Manda o ViewModel carregar os dados
-        // (Mostra o "Carregando...")
-        // binding.progressBar.setVisibility(View.VISIBLE);
-        binding.rvCampanhas.setVisibility(View.GONE);
-        // binding.tvFeedVazio.setVisibility(View.GONE);
-        feedViewModel.carregarCampanhas();
+        // 4. Configura os cliques
+        setupClickListeners();
+
+        // (A chamada de 'carregarCampanhas()' foi removida daqui,
+        // pois o ViewModel já faz isso no construtor)
     }
 
     private void setupRecyclerView() {
-        // Listner para fazer o click
         adapter = new CampanhaAdapter(campanha -> {
-            // 1. Encontra o NavController
             NavController navController = Navigation.findNavController(requireView());
-
-            // 2. Cria o "pacote"
             Bundle bundle = new Bundle();
             bundle.putString("campanhaId", campanha.getId());
-
-            // 3. Navega
             navController.navigate(R.id.action_feedFragment_to_detalheCampanhaFragment, bundle);
         });
 
@@ -75,36 +75,82 @@ public class FeedFragment extends Fragment {
     }
 
     private void setupObservers() {
+        // Observador para o Cabeçalho
+        authViewModel.getDadosUsuarioLiveData().observe(getViewLifecycleOwner(), usuario -> {
+            if (usuario != null) {
+                preencherCabecalho(usuario);
+            }
+        });
+
         // Observa a lista de campanhas
         feedViewModel.getCampanhasLiveData().observe(getViewLifecycleOwner(), campanhas -> {
-
-            // binding.progressBar.setVisibility(View.GONE); // Esconde o "Carregando"
-
             if (campanhas != null && !campanhas.isEmpty()) {
-                // Se a lista não for vazia, mostra a lista
                 adapter.submitList(campanhas);
                 binding.rvCampanhas.setVisibility(View.VISIBLE);
-               // binding.tvFeedVazio.setVisibility(View.GONE);
             } else {
-                // Se for vazia, mostra a mensagem "Feed Vazio"
                 binding.rvCampanhas.setVisibility(View.GONE);
-                //binding.tvFeedVazio.setVisibility(View.VISIBLE);
+                // TODO: Mostrar uma view "feed vazio"
             }
         });
 
         // Observa erros
         feedViewModel.getErroLiveData().observe(getViewLifecycleOwner(), erro -> {
             if (erro != null) {
-               // binding.progressBar.setVisibility(View.GONE);
                 Toast.makeText(getContext(), erro, Toast.LENGTH_LONG).show();
-                //binding.tvFeedVazio.setVisibility(View.VISIBLE);
             }
         });
+    }
+
+    /**
+     * Preenche o cabeçalho do feed com os dados do usuário
+     */
+    private void preencherCabecalho(Usuario usuario) {
+        // Usa os IDs CORRETOS do layout da ONDA
+        binding.tvGreeting.setText("Olá,\n" + usuario.getNomeCompleto());
+        binding.tvHeaderTipoSanguineo.setText(usuario.getTipoSanguineo());
+
+        // Atualiza o card de estatísticas
+        binding.tvHeaderDoacoesCount.setText(String.valueOf(usuario.getQuantidadeDoacoes()));
+
+        String doacoesStr = usuario.getQuantidadeDoacoes() == 1 ? "vida salva\naté agora!" : "vidas salvas\naté agora!";
+        binding.tvHeaderDoacoesText.setText(doacoesStr);
+
+        // TODO: Implementar o carregamento da foto de perfil
+        // Glide.with(this).load(usuario.getUrlFotoPerfil()).into(binding.ivUserPhoto);
+    }
+
+    /**
+     * Configura os cliques dos novos botões do layout
+     */
+    private void setupClickListeners() {
+        // Usa o ID 'btnFiltro' do seu XML
+        binding.btnFiltro.setOnClickListener(v -> {
+            FilterBottomSheetFragment bottomSheet = FilterBottomSheetFragment.newInstance();
+
+            // --- ESTA É A CORREÇÃO DO CRASH ---
+            // Mostra o BottomSheet usando o FragmentManager FILHO,
+            // o que torna o FeedFragment o "ParentFragment" correto.
+            bottomSheet.show(getChildFragmentManager(), "FilterBottomSheet");
+        });
+    }
+
+    /**
+     * Este método é chamado pelo FilterBottomSheetFragment quando
+     * o usuário clica em "Aplicar" ou "Limpar".
+     */
+    @Override
+    public void onFilterApplied(String tipoSanguineo, String cidade) {
+        // Guarda os filtros
+        this.filtroTipoSanguineoAtual = (tipoSanguineo != null && tipoSanguineo.equals("Todos")) ? null : tipoSanguineo;
+        this.filtroCidadeAtual = (cidade != null && cidade.isEmpty()) ? null : cidade;
+
+        // Manda o ViewModel buscar a nova lista com os filtros
+        feedViewModel.carregarCampanhasFiltradas(filtroTipoSanguineoAtual, filtroCidadeAtual);
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        binding = null; // Limpa a referência do binding
+        binding = null;
     }
 }

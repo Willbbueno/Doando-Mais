@@ -61,41 +61,57 @@ public class CampaignRepository {
     public LiveData<Campanha> getCampanhaDetalheLiveData() { return campanhaDetalheLiveData;}
     public LiveData<List<Campanha>> getMinhasCampanhasLiveData() {return minhasCampanhasLiveData;}
     public LiveData<Boolean> getAtualizacaoCampanhaSucessoLiveData() { return atualizacaoCampanhaSucessoLiveData;}
+
     // --- Métodos de Acesso ao Banco ---
 
     /**
-     * Busca todas as campanhas do Firestore em tempo real.
+     * Busca as campanhas do Firestore em tempo real, com filtros opcionais.
      * Ordena pelas mais recentes.
+     *
+     * @param filtroTipoSanguineo O tipo sanguíneo para filtrar (ou null/vazio para todos)
+     * @param filtroCidade A cidade para filtrar (ou null/vazio para todas)
      */
-    public void buscarTodasCampanhas() {
+    public void buscarCampanhasFiltradas(String filtroTipoSanguineo, String filtroCidade) {
 
-        // Query para buscar campanhas, ordenadas pela data de criação (mais novas primeiro)
-        campanhasCollection.orderBy("dataCriacao", Query.Direction.DESCENDING)
-                .addSnapshotListener((value, error) -> {
-                    if (error != null) {
-                        // Se der erro, informa o ViewModel
-                        Log.w(TAG, "Erro ao buscar campanhas.", error);
-                        erroLiveData.postValue("Erro ao carregar o feed: " + error.getMessage());
-                        return;
-                    }
+        // 1. Começa com a query básica, ordenando pela data
+        Query query = campanhasCollection.orderBy("dataCriacao", Query.Direction.DESCENDING);
 
-                    if (value != null) {
-                        // Converte os documentos em objetos "Campanha"
-                        List<Campanha> listaCampanhas = new ArrayList<>();
-                        for (QueryDocumentSnapshot document : value) {
+        // 2. Adiciona o filtro de TIPO SANGUÍNEO, se ele existir
+        if (filtroTipoSanguineo != null && !filtroTipoSanguineo.isEmpty() && !filtroTipoSanguineo.equals("Todos")) {
+            // Isso permite buscar por "Todos" ou por um tipo específico
+            query = query.whereEqualTo("tipoSanguineoNecessario", filtroTipoSanguineo);
+        }
 
-                            // Converte o documento do Firestore para nosso objeto Campanha.java
-                            Campanha campanha = document.toObject(Campanha.class);
+        // 3. Adiciona o filtro de CIDADE, se ele existir
+        if (filtroCidade != null && !filtroCidade.isEmpty()) {
+            // O cliente pediu filtro por cidade/estado. Vamos começar pela cidade.
+            query = query.whereEqualTo("cidadeHemocentro", filtroCidade);
+            // NOTA: Se você filtrar por cidade E tipo sanguíneo, o Firestore
+            // vai exigir um ÍNDICE COMPOSTO. Esteja pronto para o erro no logcat
+            // e para clicar no link para criar o índice, como fizemos na Fase 8.
+        }
 
-                            //Seta o ID do documento no objeto
-                            campanha.setId(document.getId());
+        // 4. Executa a query (com ou sem filtros)
+        query.addSnapshotListener((value, error) -> {
+            if (error != null) {
+                // Se der erro, informa o ViewModel
+                Log.w(TAG, "Erro ao buscar campanhas filtradas.", error);
+                erroLiveData.postValue("Erro ao carregar o feed: " + error.getMessage());
+                return;
+            }
 
-                            listaCampanhas.add(campanha);
-                        }
-                        // Envia a lista completa para o LiveData
-                        campanhasLiveData.postValue(listaCampanhas);
-                    }
-                });
+            if (value != null) {
+                // Sucesso! Vamos converter os documentos em objetos "Campanha"
+                List<Campanha> listaCampanhas = new ArrayList<>();
+                for (QueryDocumentSnapshot document : value) {
+                    Campanha campanha = document.toObject(Campanha.class);
+                    campanha.setId(document.getId());
+                    listaCampanhas.add(campanha);
+                }
+                // Envia a lista completa para o LiveData
+                campanhasLiveData.postValue(listaCampanhas);
+            }
+        });
     }
 
     /**

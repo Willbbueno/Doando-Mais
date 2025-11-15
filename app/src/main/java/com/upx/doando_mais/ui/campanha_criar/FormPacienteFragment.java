@@ -167,6 +167,7 @@ public class FormPacienteFragment extends Fragment {
         // Dados do Local (baseado na seleção)
         novaCampanha.setNomeHemocentro(hemocentroSelecionado.getNome());
         novaCampanha.setEnderecoHemocentro(hemocentroSelecionado.getEndereco());
+        novaCampanha.setCidadeHemocentro(hemocentroSelecionado.getCidade());
         // (Podemos adicionar o telefone do hemocentro ao modelo Hemocentro.java depois)
 
         // Data de Expiração (1 Mês, conforme diretriz)

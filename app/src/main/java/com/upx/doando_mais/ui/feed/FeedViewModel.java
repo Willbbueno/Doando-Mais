@@ -1,5 +1,5 @@
 package com.upx.doando_mais.ui.feed;
-// classe para criar uma instancia do campaignRepository e deixar observável os livedatas para o feedfragment. Na prática irá guardar o dado para a tela.
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 import com.upx.doando_mais.data.model.Campanha;
@@ -23,6 +23,9 @@ public class FeedViewModel extends ViewModel {
         // 2. "Pega emprestado" os LiveData do repositório
         campanhasLiveData = campaignRepository.getCampanhasLiveData();
         erroLiveData = campaignRepository.getErroLiveData();
+
+        // 3. Carrega o feed inicial (sem filtros)
+        carregarCampanhasFiltradas(null, null);
     }
 
     // --- Getters para o Fragment ---
@@ -38,10 +41,14 @@ public class FeedViewModel extends ViewModel {
     // --- Ação ---
 
     /**
-     * Pede ao repositório para começar a buscar as campanhas.
+     * Pede ao repositório para buscar as campanhas, aplicando filtros.
      * O Fragment chamará este método.
+     *
+     * @param tipo (Tipo sanguíneo) ou null para todos
+     * @param cidade (Cidade) ou null para todas
      */
-    public void carregarCampanhas() {
-        campaignRepository.buscarTodasCampanhas();
+    public void carregarCampanhasFiltradas(String tipo, String cidade) {
+
+        campaignRepository.buscarCampanhasFiltradas(tipo, cidade);
     }
 }

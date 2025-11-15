@@ -1,13 +1,11 @@
 package com.upx.doando_mais.ui.feed.adapter;
 
-import android.os.Bundle;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,22 +14,21 @@ import com.upx.doando_mais.data.model.Campanha;
 
 public class CampanhaAdapter extends ListAdapter<Campanha, CampanhaAdapter.CampanhaViewHolder> {
 
-    // --- NOVA INTERFACE ---
-    // Define um "contrato" que o Fragment deve implementar
+    // 1: Definir os "tipos de view" ---
+    // Vamos usar números para identificar nossos layouts
+    private static final int VIEW_TYPE_PACIENTE = 1;
+    private static final int VIEW_TYPE_PUBLICA = 2;
+
     public interface OnCampanhaClickListener {
         void onCampanhaClick(Campanha campanha);
     }
-    // ----------------------
 
-    private final OnCampanhaClickListener listener; // Armazena o listener
+    private final OnCampanhaClickListener listener;
 
-    // --- CONSTRUTOR MODIFICADO ---
-    // Agora o adapter EXIGE um listener quando é criado
     public CampanhaAdapter(OnCampanhaClickListener listener) {
         super(DIFF_CALLBACK);
         this.listener = listener;
     }
-    // ---------------------------
 
     private static final DiffUtil.ItemCallback<Campanha> DIFF_CALLBACK = new DiffUtil.ItemCallback<Campanha>() {
         @Override
@@ -41,16 +38,38 @@ public class CampanhaAdapter extends ListAdapter<Campanha, CampanhaAdapter.Campa
 
         @Override
         public boolean areContentsTheSame(@NonNull Campanha oldItem, @NonNull Campanha newItem) {
+            // Adicionamos o tipoCampanha na verificação de conteúdo
             return oldItem.getTitulo().equals(newItem.getTitulo()) &&
-                    oldItem.getDescricao().equals(newItem.getDescricao());
+                    oldItem.getTipoCampanha().equals(newItem.getTipoCampanha());
         }
     };
+
+    // 2: Dizer ao Adapter qual layout usar ---
+    @Override
+    public int getItemViewType(int position) {
+        Campanha campanha = getItem(position);
+        if (campanha.getTipoCampanha() != null && campanha.getTipoCampanha().equals("Paciente")) {
+            return VIEW_TYPE_PACIENTE;
+        } else {
+            return VIEW_TYPE_PUBLICA;
+        }
+    }
 
     @NonNull
     @Override
     public CampanhaViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_campanha, parent, false);
+        // 3: Carregar o layout CORRETO ---
+        // Agora, inflamos o layout baseado no viewType que definimos acima
+        View view;
+        if (viewType == VIEW_TYPE_PACIENTE) {
+            // Infla o card vermelho claro
+            view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.item_campanha_paciente, parent, false);
+        } else {
+            // Infla o card turquesa claro
+            view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.item_campanha_publica, parent, false);
+        }
         return new CampanhaViewHolder(view);
     }
 
@@ -60,26 +79,26 @@ public class CampanhaAdapter extends ListAdapter<Campanha, CampanhaAdapter.Campa
         holder.bind(campanha);
     }
 
-    // --- VIEW HOLDER MODIFICADO ---
+    // ViewHolder preenche os campos
     class CampanhaViewHolder extends RecyclerView.ViewHolder {
 
         private TextView tvTitulo;
-        private TextView tvDescricao;
         private TextView tvLocal;
+        private TextView tvTipoSanguineo; // O chip no layout
 
         public CampanhaViewHolder(@NonNull View itemView) {
             super(itemView);
 
+            // Os IDs são os mesmos em ambos os layouts (item_campanha_paciente/publica)
             tvTitulo = itemView.findViewById(R.id.tv_item_titulo);
-            tvDescricao = itemView.findViewById(R.id.tv_item_descricao);
             tvLocal = itemView.findViewById(R.id.tv_item_local);
+            tvTipoSanguineo = itemView.findViewById(R.id.chip_tipo_sanguineo); // É um TextView (Chip)
 
-            // A lógica de clique agora é simples:
             itemView.setOnClickListener(v -> {
                 int position = getBindingAdapterPosition();
                 if (position != RecyclerView.NO_POSITION) {
                     Campanha campanhaClicada = getItem(position);
-                    // Chama o "contrato" (listener) que o Fragment nos deu
+                    // O listener (contrato) funciona igual para ambos os fragments
                     listener.onCampanhaClick(campanhaClicada);
                 }
             });
@@ -87,13 +106,8 @@ public class CampanhaAdapter extends ListAdapter<Campanha, CampanhaAdapter.Campa
 
         public void bind(Campanha campanha) {
             tvTitulo.setText(campanha.getTitulo());
-            tvDescricao.setText(campanha.getDescricao());
-
-            if (campanha.getNomePaciente() != null && !campanha.getNomePaciente().isEmpty()) {
-                tvLocal.setText("Paciente: " + campanha.getNomePaciente() + " | Local: " + campanha.getNomeHemocentro());
-            } else {
-                tvLocal.setText("Local: " + campanha.getNomeHemocentro());
-            }
+            tvLocal.setText(campanha.getNomeHemocentro());
+            tvTipoSanguineo.setText(campanha.getTipoSanguineoNecessario());
         }
     }
 }
