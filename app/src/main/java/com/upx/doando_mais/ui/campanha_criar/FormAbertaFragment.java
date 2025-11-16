@@ -157,6 +157,7 @@ public class FormAbertaFragment extends Fragment {
         // Dados do Local (baseado na seleção)
         novaCampanha.setNomeHemocentro(hemocentroSelecionado.getNome());
         novaCampanha.setEnderecoHemocentro(hemocentroSelecionado.getEndereco());
+        novaCampanha.setCidadeHemocentro(hemocentroSelecionado.getCidade());
         // (Conforme diretriz, telefone e horário são fixos da Colsan)
         novaCampanha.setContatoWhatsApp(hemocentroSelecionado.getTelefone()); // Reutilizamos o campo
 

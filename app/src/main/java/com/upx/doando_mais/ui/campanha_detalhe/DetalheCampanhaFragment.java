@@ -1,5 +1,7 @@
 package com.upx.doando_mais.ui.campanha_detalhe;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,15 +14,15 @@ import androidx.lifecycle.ViewModelProvider;
 import com.upx.doando_mais.data.model.Campanha;
 import com.upx.doando_mais.databinding.FragmentDetalheCampanhaBinding;
 
+
 public class DetalheCampanhaFragment extends Fragment {
 
     private FragmentDetalheCampanhaBinding binding;
     private DetalheCampanhaViewModel detalheCampanhaViewModel;
     private String campanhaId;
+    private Campanha campanhaAtual; // Para guardar a campanha carregada
 
-    public DetalheCampanhaFragment() {
-        // Construtor vazio obrigatório
-    }
+    public DetalheCampanhaFragment() {}
 
     @Nullable
     @Override
@@ -44,7 +46,10 @@ public class DetalheCampanhaFragment extends Fragment {
         // 3. Configura os Observadores
         configurarObservadores();
 
-        // 5. Manda o ViewModel buscar os dados (e mostra o "Carregando")
+        // 4. Configura os Cliques (serão ativados após os dados carregarem)
+        configurarCliques();
+
+        // 5. Manda o ViewModel buscar os dados
         if (campanhaId != null) {
             mostrarCarregando(true);
             detalheCampanhaViewModel.carregarDetalhesCampanha(campanhaId);
@@ -57,8 +62,9 @@ public class DetalheCampanhaFragment extends Fragment {
         // Observa o SUCESSO da busca
         detalheCampanhaViewModel.getCampanhaDetalheLiveData().observe(getViewLifecycleOwner(), campanha -> {
             if (campanha != null) {
-                mostrarCarregando(false);
+                this.campanhaAtual = campanha; // Salva a campanha
                 preencherDados(campanha);
+                mostrarCarregando(false);
             }
         });
 
@@ -72,46 +78,110 @@ public class DetalheCampanhaFragment extends Fragment {
     }
 
     /**
-     * Preenche todos os TextViews do layout com os dados da Campanha.
+     * Preenche todos os campos com os dados da Campanha.
+     * ESTA É A LÓGICA PRINCIPAL DA FASE 6.
      */
     private void preencherDados(Campanha campanha) {
+        // --- 1. Preenche Dados Comuns ---
         binding.tvDetalheTitulo.setText(campanha.getTitulo());
         binding.tvDetalheOrganizador.setText("Criada por: " + campanha.getNomeOrganizador());
         binding.tvDetalheDescricao.setText(campanha.getDescricao());
 
-        // Card de Informações
-        binding.tvDetalheLocal.setText(campanha.getNomeHemocentro());
-        binding.tvDetalheEndereco.setText(campanha.getEnderecoHemocentro());
-        binding.tvDetalheTipoSanguineo.setText(campanha.getTipoSanguineoNecessario());
+        // --- 2. Lógica de Visibilidade (Paciente vs. Pública) ---
+        if (campanha.getTipoCampanha() != null && campanha.getTipoCampanha().equals("Paciente")) {
+            // --- MOSTRAR LAYOUT DE PACIENTE ---
+            binding.groupDetalhePaciente.setVisibility(View.VISIBLE);
+            binding.groupDetalhePublica.setVisibility(View.GONE);
 
-        // Paciente (só mostra se existir)
-        if (campanha.getNomePaciente() != null && !campanha.getNomePaciente().isEmpty()) {
-            binding.tvLabelPaciente.setVisibility(View.VISIBLE);
-            binding.tvDetalhePaciente.setVisibility(View.VISIBLE);
-            binding.tvDetalhePaciente.setText(campanha.getNomePaciente());
-        } else {
-            binding.tvLabelPaciente.setVisibility(View.GONE);
-            binding.tvDetalhePaciente.setVisibility(View.GONE);
-        }
+            // Preenche os campos de Paciente
+            String meta = campanha.getMetaDoadores() + (campanha.getMetaDoadores() > 1 ? " Doadores" : " Doador");
+            binding.tvDetalheMeta.setText(meta);
+            binding.tvDetalheTipoSanguineo.setText(campanha.getTipoSanguineoNecessario());
+            binding.tvDetalheLocalPaciente.setText(campanha.getNomeHemocentro());
+            binding.tvDetalheEnderecoPaciente.setText(campanha.getEnderecoHemocentro());
+            binding.tvDetalheTelefonePaciente.setText(campanha.getContatoWhatsApp());
 
-        // Contato (só mostra o card se existir)
-        if (campanha.getContatoWhatsApp() != null && !campanha.getContatoWhatsApp().isEmpty()) {
-            binding.cardContato.setVisibility(View.VISIBLE);
-            binding.tvDetalheWhatsapp.setText(campanha.getContatoWhatsApp());
+            // Configura o botão de Ação (Agendar)
+            binding.btnAcaoDetalhe.setText("Agendar Doação");
+            // (A lógica de clique está em configurarCliques())
+
         } else {
-            binding.cardContato.setVisibility(View.GONE);
+            // --- MOSTRAR LAYOUT PÚBLICO ---
+            binding.groupDetalhePaciente.setVisibility(View.GONE);
+            binding.groupDetalhePublica.setVisibility(View.VISIBLE);
+
+            // Preenche os campos Públicos
+            // (A "convocação" já está na descrição, mas podemos usar o campo de descrição aqui também)
+            // binding.tvDetalheConvocacao.setText(campanha.getDescricao()); // Se quiser duplicar
+            binding.tvDetalheLocalPublica.setText(campanha.getNomeHemocentro());
+            binding.tvDetalheTelefonePublica.setText(campanha.getContatoWhatsApp());
+
+            // TODO: O Horário de Atendimento precisa ser salvo no Hemocentro e na Campanha
+            binding.tvDetalheHorario.setText("Seg a Sex, das 08h às 17h"); // Valor "mockado"
+
+            // Configura o botão de Ação (Ele some)
+            binding.btnAcaoDetalhe.setVisibility(View.GONE);
         }
+    }
+
+    /**
+     * Configura os cliques dos botões (Google Maps, Agendamento, Compartilhar)
+     */
+    private void configurarCliques() {
+
+        // Botão de Ação Principal (Agendar Doação - Apenas para Paciente)
+        binding.btnAcaoDetalhe.setOnClickListener(v -> {
+            // TODO: Fase 7 - Incrementar o contador no Firestore
+            // detalheCampanhaViewModel.incrementarAgendamento(campanhaId);
+
+            // Abre o link da Colsan (conforme diretriz)
+            String url = "https://colsan.org.br/site/agendamento";
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setData(Uri.parse(url));
+            startActivity(i);
+        });
+
+        // Botão de Mapa (Apenas para Paciente)
+        binding.btnDetalheMapa.setOnClickListener(v -> {
+            if (campanhaAtual != null) {
+                // Abre o Google Maps com o endereço do hemocentro
+                Uri gmmIntentUri = Uri.parse("geo:0,0?q=" + Uri.encode(campanhaAtual.getEnderecoHemocentro()));
+                Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+                mapIntent.setPackage("com.google.android.apps.maps");
+                if (mapIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+                    startActivity(mapIntent);
+                } else {
+                    Toast.makeText(getContext(), "Google Maps não instalado.", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        // Botão de Compartilhar (Comum a ambos)
+        binding.btnCompartilharDetalhe.setOnClickListener(v -> {
+            if (campanhaAtual != null) {
+                Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                shareIntent.setType("text/plain");
+                String shareBody = "Ajude nesta campanha de doação de sangue!\n\n" +
+                        "*" + campanhaAtual.getTitulo() + "*\n" +
+                        "Local: " + campanhaAtual.getNomeHemocentro() + "\n\n" +
+                        "Baixe o app Doando+ e ajude a salvar vidas!";
+                shareIntent.putExtra(Intent.EXTRA_TEXT, shareBody);
+                startActivity(Intent.createChooser(shareIntent, "Compartilhar Campanha"));
+            }
+        });
     }
 
     private void mostrarCarregando(boolean carregando) {
         if (carregando) {
             binding.progressBarDetalhe.setVisibility(View.VISIBLE);
             binding.scrollView.setVisibility(View.GONE);
-            binding.btnVouDoar.setVisibility(View.GONE);
+            binding.btnAcaoDetalhe.setVisibility(View.GONE);
+            binding.btnCompartilharDetalhe.setVisibility(View.GONE);
         } else {
             binding.progressBarDetalhe.setVisibility(View.GONE);
             binding.scrollView.setVisibility(View.VISIBLE);
-            binding.btnVouDoar.setVisibility(View.VISIBLE);
+            // (Os botões são mostrados ou escondidos pela lógica do preencherDados)
+            binding.btnCompartilharDetalhe.setVisibility(View.VISIBLE);
         }
     }
 

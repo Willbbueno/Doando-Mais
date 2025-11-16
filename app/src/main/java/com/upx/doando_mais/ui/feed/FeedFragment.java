@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView; // Importa a classe TextView
+import android.widget.TextView; // Importe a classe TextView
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,7 +21,7 @@ import com.upx.doando_mais.ui.auth.AuthViewModel;
 import com.upx.doando_mais.ui.feed.adapter.CampanhaAdapter;
 import com.upx.doando_mais.ui.feed.filter.FilterBottomSheetFragment; // Importe o Filtro
 
-// --- Adicione a implementação da interface ---
+// --- 1. Adicione a implementação da interface ---
 public class FeedFragment extends Fragment implements FilterBottomSheetFragment.FilterListener {
 
     private FeedViewModel feedViewModel;
@@ -45,21 +45,13 @@ public class FeedFragment extends Fragment implements FilterBottomSheetFragment.
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // 1. Inicializa os ViewModels
+        // Inicializa os ViewModels
         feedViewModel = new ViewModelProvider(this).get(FeedViewModel.class);
         authViewModel = new ViewModelProvider(requireActivity()).get(AuthViewModel.class);
 
-        // 2. Configura o Adapter e o RecyclerView
         setupRecyclerView();
-
-        // 3. Configura os Observadores
         setupObservers();
-
-        // 4. Configura os cliques
         setupClickListeners();
-
-        // (A chamada de 'carregarCampanhas()' foi removida daqui,
-        // pois o ViewModel já faz isso no construtor)
     }
 
     private void setupRecyclerView() {
@@ -127,9 +119,9 @@ public class FeedFragment extends Fragment implements FilterBottomSheetFragment.
         binding.btnFiltro.setOnClickListener(v -> {
             FilterBottomSheetFragment bottomSheet = FilterBottomSheetFragment.newInstance();
 
-            // --- ESTA É A CORREÇÃO DO CRASH ---
-            // Mostra o BottomSheet usando o FragmentManager FILHO,
-            // o que torna o FeedFragment o "ParentFragment" correto.
+            // --- 2. ESTA É A CORREÇÃO DO CRASH ---
+            // Usamos getChildFragmentManager() para que o FeedFragment
+            // seja o "pai" (ParentFragment) do menu de filtro.
             bottomSheet.show(getChildFragmentManager(), "FilterBottomSheet");
         });
     }
