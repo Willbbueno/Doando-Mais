@@ -3,7 +3,6 @@ plugins {
     id("com.google.gms.google-services")
 
 }
-
 android {
     namespace = "com.upx.doando_mais"
     compileSdk = 36
