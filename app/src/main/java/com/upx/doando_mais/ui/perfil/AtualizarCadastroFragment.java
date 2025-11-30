@@ -13,19 +13,17 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import com.upx.doando_mais.data.model.Usuario;
-import com.upx.doando_mais.databinding.FragmentAtualizarCadastroBinding; // Use o Binding de ATUALIZAR
+import com.upx.doando_mais.databinding.FragmentAtualizarCadastroBinding;
 import com.upx.doando_mais.ui.auth.AuthViewModel;
 
 public class AtualizarCadastroFragment extends Fragment {
 
     private FragmentAtualizarCadastroBinding binding;
-    private AuthViewModel authViewModel; // O ViewModel compartilhado que já tem os dados
+    private AuthViewModel authViewModel;
     private NavController navController;
-    private Usuario usuarioAtual; // Para guardar o objeto do usuário
+    private Usuario usuarioAtual; // Objeto clonado para edição
 
-    public AtualizarCadastroFragment() {
-        // Construtor vazio necessário
-    }
+    public AtualizarCadastroFragment() {}
 
     @Nullable
     @Override
@@ -38,14 +36,11 @@ public class AtualizarCadastroFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // 1. Inicializa o ViewModel (compartilhado da Activity) e o NavController
         navController = Navigation.findNavController(view);
         authViewModel = new ViewModelProvider(requireActivity()).get(AuthViewModel.class);
 
-        // 2. Configura os Observadores
         configurarObservadores();
 
-        // 3. Configura o clique do botão "Salvar"
         binding.btnAtualizarDados.setOnClickListener(v -> {
             tentarAtualizarDados();
         });
@@ -54,26 +49,34 @@ public class AtualizarCadastroFragment extends Fragment {
     private void configurarObservadores() {
         // Observa os dados do usuário para PREENCHER o formulário
         authViewModel.getDadosUsuarioLiveData().observe(getViewLifecycleOwner(), usuario -> {
-            if (usuario != null) {
-                this.usuarioAtual = usuario; // Salva o objeto
-                preencherFormulario(usuario);
+            if (usuario != null && this.usuarioAtual == null) {
+                // ⬇️ CORREÇÃO ERRO 1 ⬇️
+                // Agora o 'new Usuario(usuario)' funciona
+                this.usuarioAtual = new Usuario(usuario);
+                preencherFormulario(this.usuarioAtual);
             }
         });
 
         // Observa o SUCESSO do salvamento
         authViewModel.getSalvamentoUsuarioSucessoLiveData().observe(getViewLifecycleOwner(), sucesso -> {
-            if (sucesso) {
+            if (sucesso != null && sucesso) {
                 mostrarCarregando(false);
                 Toast.makeText(getContext(), "Dados atualizados com sucesso!", Toast.LENGTH_LONG).show();
+
+                // ⬇️ CORREÇÃO ERRO 2 ⬇️
+                // Agora o método 'limparStatusSalvamento()' existe
+                authViewModel.limparStatusSalvamento();
+
                 navController.popBackStack(); // Volta para a tela de Perfil
             }
         });
 
         // Observa ERROS
-        authViewModel.getErroAutenticacaoLiveData().observe(getViewLifecycleOwner(), erro -> {
+        authViewModel.getErroLiveData().observe(getViewLifecycleOwner(), erro -> {
             if (erro != null) {
                 mostrarCarregando(false);
                 Toast.makeText(getContext(), "Erro ao salvar: " + erro, Toast.LENGTH_LONG).show();
+                authViewModel.limparErro();
             }
         });
     }
@@ -88,7 +91,8 @@ public class AtualizarCadastroFragment extends Fragment {
         binding.etAtualizarDataNasc.setText(usuario.getDataNascimento());
         binding.etAtualizarCidade.setText(usuario.getCidade());
         binding.etAtualizarEstado.setText(usuario.getEstado());
-        // (Aqui você preencheria os Spinners se os tivesse adicionado)
+        // ⬇️ CORREÇÃO ERRO 3 (REMOVIDO) ⬇️
+        // binding.etAtualizarTelefone.setText(usuario.getTelefone());
     }
 
     /**
@@ -106,6 +110,8 @@ public class AtualizarCadastroFragment extends Fragment {
         String dataNasc = binding.etAtualizarDataNasc.getText().toString().trim();
         String cidade = binding.etAtualizarCidade.getText().toString().trim();
         String estado = binding.etAtualizarEstado.getText().toString().trim();
+        // ⬇️ CORREÇÃO ERRO 4 (REMOVIDO) ⬇️
+        // String telefone = binding.etAtualizarTelefone.getText().toString().trim();
 
         // 2. Validação simples
         if (TextUtils.isEmpty(nome) || TextUtils.isEmpty(cpf) || TextUtils.isEmpty(cidade)) {
@@ -114,13 +120,13 @@ public class AtualizarCadastroFragment extends Fragment {
         }
 
         // 3. ATUALIZA o objeto 'usuarioAtual' com os novos dados
-        // (Isso preserva o UID, Email, Perfil, TipoSanguineo, etc.)
         usuarioAtual.setNomeCompleto(nome);
         usuarioAtual.setCpf(cpf);
         usuarioAtual.setDataNascimento(dataNasc);
         usuarioAtual.setCidade(cidade);
         usuarioAtual.setEstado(estado);
-        // (Aqui você pegaria os valores dos Spinners se os tivesse)
+        // ⬇️ CORREÇÃO ERRO 4 (REMOVIDO) ⬇️
+        // usuarioAtual.setTelefone(telefone);
 
         // 4. Manda o ViewModel salvar o objeto ATUALIZADO
         mostrarCarregando(true);
