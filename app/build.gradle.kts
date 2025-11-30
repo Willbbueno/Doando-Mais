@@ -43,12 +43,19 @@ dependencies {
     implementation(libs.activity)
     implementation(libs.constraintlayout)
 
+    // --- Firebase ---
+    // 1. Importa o "Controle de Versões" (BOM) - MANTENHA APENAS UM!
+    implementation(platform("com.google.firebase:firebase-bom:34.5.0"))
+
+    // 2. Adicione os produtos SEM especificar a versão
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.auth)
-    implementation(platform("com.google.firebase:firebase-bom:34.5.0"))
     implementation("com.google.firebase:firebase-storage")
 
+    // 3. Adicione a dependência de DEBUG do App Check (também sem versão)
+    implementation("com.google.firebase:firebase-appcheck-debug")
 
+    // --- Lifecycle & Navigation ---
     val lifecycleVersion = "2.8.1"
     implementation("androidx.lifecycle:lifecycle-viewmodel:$lifecycleVersion")
     implementation("androidx.lifecycle:lifecycle-livedata:$lifecycleVersion")
@@ -56,12 +63,11 @@ dependencies {
     implementation("androidx.navigation:navigation-fragment:$navVersion")
     implementation("androidx.navigation:navigation-ui:$navVersion")
 
+    // --- Glide (para fotos) ---
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+
+    // --- Testes ---
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
-
-    implementation(platform("com.google.firebase:firebase-bom:33.2.0"))
-    implementation("com.google.firebase:firebase-appcheck-playintegrity")
-    implementation("com.google.firebase:firebase-appcheck-debug:18.0.0")
-
 }
