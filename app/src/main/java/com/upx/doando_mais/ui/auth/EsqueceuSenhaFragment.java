@@ -1,4 +1,6 @@
 package com.upx.doando_mais.ui.auth;
 
-public class EsqueceuSenhaFragment {
+import androidx.fragment.app.Fragment;
+
+public class EsqueceuSenhaFragment extends Fragment {
 }

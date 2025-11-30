@@ -1,30 +1,26 @@
 package com.upx.doando_mais.data.model;
-// lembrar de validar as entradas ao get e set
+
 public class Usuario {
 
     // Atributos do usuário
-
-    private String uid; //Id único gerado pelo Firebase Authentication, chave primária.
+    private String uid;
     private String nomeCompleto;
-    private String email; //Não armazenaremos a senha aqui, o firebase auth cuidará disso.
+    private String email;
     private String cpf;
     private String sexo;
     private String dataNascimento;
     private String cidade;
     private String estado;
     private String tipoSanguineo;
-    private String perfil; // "Doador", "Organização", "Mobilizador".
-    private int quantidadeDoacoes; // Contador de doações realizadas.
+    private String perfil;
+    private int quantidadeDoacoes;
     private String telefone;
     private String urlFotoPerfil;
 
-
     // Construtor vazio - obrigatório para utilizar no Firebase.
-
     public Usuario(){}
 
-    // Construtor com parâmetros (útil para criar novos usuários no código)
-    // Construtor com parâmetros (CORRIGIDO)
+    // Construtor principal
     public Usuario(String uid, String nomeCompleto, String email, String cpf, String sexo,
                    String dataNascimento, String cidade, String estado, String tipoSanguineo,
                    String perfil, int quantidadeDoacoes, String urlFotoPerfil, String telefone) {
@@ -43,11 +39,30 @@ public class Usuario {
         this.telefone = telefone;
     }
 
-    public Usuario(Object o, String nome, String email, String cpf, String sexo, String dataNasc, String cidade, String estado, String tipoSanguineo, String perfil, int i, Object o1, Object o2, Object o3) {
+    // ⬇️ --- CORREÇÃO DO ERRO 1 --- ⬇️
+    /**
+     * Construtor de Cópia.
+     * Cria um novo objeto Usuario baseado em outro.
+     */
+    public Usuario(Usuario outro) {
+        this.uid = outro.uid;
+        this.nomeCompleto = outro.nomeCompleto;
+        this.email = outro.email;
+        this.cpf = outro.cpf;
+        this.sexo = outro.sexo;
+        this.dataNascimento = outro.dataNascimento;
+        this.cidade = outro.cidade;
+        this.estado = outro.estado;
+        this.tipoSanguineo = outro.tipoSanguineo;
+        this.perfil = outro.perfil;
+        this.quantidadeDoacoes = outro.quantidadeDoacoes;
+        this.urlFotoPerfil = outro.urlFotoPerfil;
+        this.telefone = outro.telefone;
     }
+    // O construtor quebrado com (Object o, ...) foi removido.
 
-    // Construtores, getters e setters
 
+    // --- Getters e Setters ---
 
     public String getUid() {
         return uid;

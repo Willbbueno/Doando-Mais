@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView; // Importe a classe TextView
+import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,21 +14,20 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.bumptech.glide.Glide; // 1. IMPORTANTE: Adicione este import!
 import com.upx.doando_mais.R;
 import com.upx.doando_mais.data.model.Usuario;
-import com.upx.doando_mais.databinding.FragmentFeedBinding; // Binding para o layout da ONDA
+import com.upx.doando_mais.databinding.FragmentFeedBinding;
 import com.upx.doando_mais.ui.auth.AuthViewModel;
 import com.upx.doando_mais.ui.feed.adapter.CampanhaAdapter;
-import com.upx.doando_mais.ui.feed.filter.FilterBottomSheetFragment; // Importe o Filtro
+import com.upx.doando_mais.ui.feed.filter.FilterBottomSheetFragment;
 
-// --- 1. Adicione a implementação da interface ---
 public class FeedFragment extends Fragment implements FilterBottomSheetFragment.FilterListener {
 
     private FeedViewModel feedViewModel;
-    private AuthViewModel authViewModel; // Para o cabeçalho
+    private AuthViewModel authViewModel;
     private FragmentFeedBinding binding;
     private CampanhaAdapter adapter;
-
     private String filtroTipoSanguineoAtual = null;
     private String filtroCidadeAtual = null;
 
@@ -45,7 +44,6 @@ public class FeedFragment extends Fragment implements FilterBottomSheetFragment.
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Inicializa os ViewModels
         feedViewModel = new ViewModelProvider(this).get(FeedViewModel.class);
         authViewModel = new ViewModelProvider(requireActivity()).get(AuthViewModel.class);
 
@@ -67,25 +65,21 @@ public class FeedFragment extends Fragment implements FilterBottomSheetFragment.
     }
 
     private void setupObservers() {
-        // Observador para o Cabeçalho
         authViewModel.getDadosUsuarioLiveData().observe(getViewLifecycleOwner(), usuario -> {
             if (usuario != null) {
                 preencherCabecalho(usuario);
             }
         });
 
-        // Observa a lista de campanhas
         feedViewModel.getCampanhasLiveData().observe(getViewLifecycleOwner(), campanhas -> {
             if (campanhas != null && !campanhas.isEmpty()) {
                 adapter.submitList(campanhas);
                 binding.rvCampanhas.setVisibility(View.VISIBLE);
             } else {
                 binding.rvCampanhas.setVisibility(View.GONE);
-                // TODO: Mostrar uma view "feed vazio"
             }
         });
 
-        // Observa erros
         feedViewModel.getErroLiveData().observe(getViewLifecycleOwner(), erro -> {
             if (erro != null) {
                 Toast.makeText(getContext(), erro, Toast.LENGTH_LONG).show();
@@ -97,46 +91,40 @@ public class FeedFragment extends Fragment implements FilterBottomSheetFragment.
      * Preenche o cabeçalho do feed com os dados do usuário
      */
     private void preencherCabecalho(Usuario usuario) {
-        // Usa os IDs CORRETOS do layout da ONDA
         binding.tvGreeting.setText("Olá,\n" + usuario.getNomeCompleto());
         binding.tvHeaderTipoSanguineo.setText(usuario.getTipoSanguineo());
 
-        // Atualiza o card de estatísticas
         binding.tvHeaderDoacoesCount.setText(String.valueOf(usuario.getQuantidadeDoacoes()));
 
         String doacoesStr = usuario.getQuantidadeDoacoes() == 1 ? "vida salva\naté agora!" : "vidas salvas\naté agora!";
         binding.tvHeaderDoacoesText.setText(doacoesStr);
 
-        // TODO: Implementar o carregamento da foto de perfil
-        // Glide.with(this).load(usuario.getUrlFotoPerfil()).into(binding.ivUserPhoto);
+        // 2. LÓGICA CORRIGIDA PARA CARREGAR A FOTO
+        if (usuario.getUrlFotoPerfil() != null && !usuario.getUrlFotoPerfil().isEmpty()) {
+            Glide.with(this)
+                    .load(usuario.getUrlFotoPerfil())
+                    .placeholder(R.drawable.ic_perfil_placeholder) // Mostra enquanto carrega
+                    .error(R.drawable.ic_perfil_placeholder)       // Mostra se der erro
+                    .into(binding.ivUserPhoto);
+        } else {
+            // Se não tiver foto, carrega o placeholder padrão
+            Glide.with(this)
+                    .load(R.drawable.ic_perfil_placeholder)
+                    .into(binding.ivUserPhoto);
+        }
     }
 
-    /**
-     * Configura os cliques dos novos botões do layout
-     */
     private void setupClickListeners() {
-        // Usa o ID 'btnFiltro' do seu XML
         binding.btnFiltro.setOnClickListener(v -> {
             FilterBottomSheetFragment bottomSheet = FilterBottomSheetFragment.newInstance();
-
-            // --- 2. ESTA É A CORREÇÃO DO CRASH ---
-            // Usamos getChildFragmentManager() para que o FeedFragment
-            // seja o "pai" (ParentFragment) do menu de filtro.
             bottomSheet.show(getChildFragmentManager(), "FilterBottomSheet");
         });
     }
 
-    /**
-     * Este método é chamado pelo FilterBottomSheetFragment quando
-     * o usuário clica em "Aplicar" ou "Limpar".
-     */
     @Override
     public void onFilterApplied(String tipoSanguineo, String cidade) {
-        // Guarda os filtros
         this.filtroTipoSanguineoAtual = (tipoSanguineo != null && tipoSanguineo.equals("Todos")) ? null : tipoSanguineo;
         this.filtroCidadeAtual = (cidade != null && cidade.isEmpty()) ? null : cidade;
-
-        // Manda o ViewModel buscar a nova lista com os filtros
         feedViewModel.carregarCampanhasFiltradas(filtroTipoSanguineoAtual, filtroCidadeAtual);
     }
 

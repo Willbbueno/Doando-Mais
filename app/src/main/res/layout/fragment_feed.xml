@@ -13,36 +13,38 @@
         android:layout_height="220dp"
         android:scaleType="fitXY"
         android:src="@drawable/bg_header_wave"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/iv_user_photo"
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:layout_marginStart="24dp"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="56dp"
         android:scaleType="centerCrop"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Full"
         app:strokeColor="@color/white"
         app:strokeWidth="2dp"
-        tools:src="@tools:sample/avatars"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        tools:src="@tools:sample/avatars" />
 
     <TextView
         android:id="@+id/tv_greeting"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        tools:text="Olá,\nWilliam Borges"
+        android:layout_marginStart="20dp"
         android:textColor="@color/white"
-        android:textSize="20sp"
+        android:textSize="25sp"
         android:textStyle="bold"
-        app:layout_constraintTop_toTopOf="@id/iv_user_photo"
         app:layout_constraintBottom_toBottomOf="@id/iv_user_photo"
-        app:layout_constraintStart_toEndOf="@id/iv_user_photo" />
+        app:layout_constraintStart_toEndOf="@id/iv_user_photo"
+        app:layout_constraintTop_toTopOf="@id/iv_user_photo"
+        app:layout_constraintVertical_bias="0.0"
+        tools:text="Olá,\nWilliam Borges" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -94,7 +96,8 @@
                 android:layout_height="wrap_content"
                 android:text="Minhas Doações"
                 android:textSize="14sp"
-                android:textColor="@color/colorTextSecondary" />
+                android:textColor="@color/md_theme_onPrimary"
+                />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -112,20 +115,15 @@
                     android:textColor="@color/doando_red_primary" />
 
                 <TextView
-                    android:id="@+id/tv_header_doacoes_text" android:layout_width="0dp"
+                    android:id="@+id/tv_header_doacoes_text"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:layout_marginStart="8dp"
-                    tools:text="vidas salvas\naté agora!"
+                    android:layout_weight="1"
+                    android:textColor="@color/colorTextPrimary"
                     android:textSize="14sp"
-                    android:textColor="@color/colorTextPrimary" />
+                    tools:text="vidas salvas\naté agora!" />
 
-                <ImageView
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:src="@drawable/ic_blood_drop"
-                    app:tint="@color/doando_red_light"
-                    android:alpha="0.2"/>
             </LinearLayout>
         </LinearLayout>
 
@@ -166,9 +164,11 @@
         android:clipToPadding="false"
         android:paddingBottom="16dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintTop_toBottomOf="@id/tv_section_title"
         app:layout_constraintBottom_toBottomOf="parent"
-        tools:listitem="@layout/item_campanha_paciente"
-        tools:itemCount="3" />
+        app:layout_constraintTop_toBottomOf="@id/tv_section_title"
+        app:layout_constraintVertical_bias="1.0"
+        tools:itemCount="3"
+        tools:layout_editor_absoluteX="0dp"
+        tools:listitem="@layout/item_campanha_paciente" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

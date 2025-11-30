@@ -1,34 +1,40 @@
 package com.upx.doando_mais.ui.auth;
-// Este pacote delega o trabalho para os repositórios
 
 import android.app.Application;
+import android.net.Uri;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-
+import androidx.lifecycle.Observer;
 import com.upx.doando_mais.data.model.Usuario;
 import com.upx.doando_mais.repository.AuthRepository;
 import com.upx.doando_mais.repository.UserRepository;
-
 import com.google.firebase.auth.FirebaseUser;
-import androidx.lifecycle.Observer;
 
 public class AuthViewModel extends AndroidViewModel {
 
     private AuthRepository authRepository;
     private UserRepository userRepository;
 
-    // LiveData
-    private LiveData<FirebaseUser> usuarioLogadoLiveData; // Info do Auth (UID, email)
-    private LiveData<String> erroAutenticacaoLiveData;
+    // LiveData Internos
+    private LiveData<FirebaseUser> usuarioLogadoLiveData;
     private LiveData<Boolean> cadastroSucessoLiveData;
+    private LiveData<String> erroAuthRepoLiveData;
+    private LiveData<String> erroUserRepoLiveData;
+
+    // LiveData Expostos para a UI
+    private MutableLiveData<String> erroLiveData;
     private LiveData<Boolean> salvamentoUsuarioSucessoLiveData;
+    private LiveData<Usuario> dadosUsuarioLiveData;
 
+    // Observadores
+    private Observer<Boolean> cadastroSucessoObserver;
+    private Observer<FirebaseUser> usuarioLogadoObserver;
+    private Observer<String> authErrorObserver;
+    private Observer<String> userErrorObserver;
 
-    private LiveData<Usuario> dadosUsuarioLiveData; // Info do Firestore (Nome, CPF, etc.)
-
-    // Guarda o usuário que está sendo cadastrado
+    // Estado
     private Usuario usuarioPendente;
 
     public AuthViewModel(@NonNull Application application) {
@@ -37,122 +43,133 @@ public class AuthViewModel extends AndroidViewModel {
         this.authRepository = new AuthRepository();
         this.userRepository = new UserRepository();
 
-        // Conecta o LiveData da ViewModel com o LiveData do Repositório
+        this.erroLiveData = new MutableLiveData<>();
         this.usuarioLogadoLiveData = authRepository.getUsuarioLogadoLiveData();
-        this.erroAutenticacaoLiveData = authRepository.getErroAutenticacaoLiveData();
-        this.salvamentoUsuarioSucessoLiveData = userRepository.getSalvamentoSucessoLiveData();
-        // Conecta o LiveData de dados do usuário
-        this.dadosUsuarioLiveData = userRepository.getUsuarioLiveData();
-
-        // ORQUESTRAÇÃO DO CADASTRO
-        // Ouve o SUCESSO DO AUTH para então SALVAR NO FIRESTORE
         this.cadastroSucessoLiveData = authRepository.getCadastroSucessoLiveData();
-        cadastroSucessoLiveData.observeForever(sucesso -> {
-            if (sucesso) {
-                // Passo 2: Auth foi criado com sucesso!
-                FirebaseUser user = usuarioLogadoLiveData.getValue();
-                if (user != null && usuarioPendente != null) {
-                    // Atualiza o UID no objeto pendente
-                    usuarioPendente.setUid(user.getUid());
+        this.salvamentoUsuarioSucessoLiveData = userRepository.getSalvamentoUsuarioSucessoLiveData();
+        this.dadosUsuarioLiveData = userRepository.getDadosUsuarioLiveData();
+        this.erroAuthRepoLiveData = authRepository.getErroAutenticacaoLiveData();
+        this.erroUserRepoLiveData = userRepository.getErroLiveData();
 
-                    // Passo 3: Salva os dados no Firestore
-                    userRepository.salvarUsuarioAdicional(user.getUid(), usuarioPendente);
-                    usuarioPendente = null; // Limpa o usuário pendente
-                }
-            }
-        });
-
-        // ORQUESTRAÇÃO DE LOGIN / LOGOUT
-        // Ouve o status do Firebase Auth (usuárioLogadoLiveData)
-        this.usuarioLogadoLiveData.observeForever(firebaseUser -> {
-            if (firebaseUser != null) {
-                // Usuário LOGOU (ou app iniciou logado)
-                // Passo 2 (do Login): Buscar os dados completos do Firestore
-                userRepository.buscarUsuario(firebaseUser.getUid());
-            } else {
-                // Usuário LOGOUT
-                // Limpa os dados do usuário que estavam na memória
-                userRepository.getUsuarioLiveData().postValue(null);
-            }
-        });
+        setupObservers();
     }
 
-    /**
-     * Inicia o processo de cadastro (Passo 1).
-     * Recebe todos os dados da View.
-     */
-    public void cadastrar(String email, String senha, String nome, String cpf, String sexo,
-                          String dataNasc, String cidade, String estado,
-                          String tipoSanguineo, String perfil) {
+    private void setupObservers() {
+        // ORQUESTRAÇÃO DE CADASTRO (Auth -> Firestore)
+        cadastroSucessoObserver = sucesso -> {
+            if (sucesso) {
+                FirebaseUser user = usuarioLogadoLiveData.getValue();
+                if (user != null && usuarioPendente != null) {
+                    usuarioPendente.setUid(user.getUid());
+                    userRepository.salvarUsuarioAdicional(user.getUid(), usuarioPendente);
+                    usuarioPendente = null;
+                }
+            }
+        };
+        cadastroSucessoLiveData.observeForever(cadastroSucessoObserver);
 
-        // Cria o objeto Usuario para salvar no Firestore (ainda sem o UID)
-        this.usuarioPendente = new Usuario(
-                null, nome, email, cpf, sexo, dataNasc, cidade, estado,
-                tipoSanguineo, perfil, 0, null,
-                null, null // nulos para telefone e urlFoto
-        );
+        // ORQUESTRAÇÃO DE LOGIN / LOGOUT (Auth -> Firestore)
+        usuarioLogadoObserver = firebaseUser -> {
+            if (firebaseUser != null) {
+                userRepository.buscarUsuario(firebaseUser.getUid());
+            } else {
+                ((MutableLiveData<Usuario>) dadosUsuarioLiveData).postValue(null);
+            }
+        };
+        usuarioLogadoLiveData.observeForever(usuarioLogadoObserver);
 
-        // Inicia o Passo 1: Criação no Firebase Auth
-        authRepository.cadastrar(email, senha);
+        // ORQUESTRAÇÃO DE ERROS (Unifica erros)
+        authErrorObserver = erro -> {
+            if (erro != null) erroLiveData.postValue(erro);
+        };
+        userErrorObserver = erro -> {
+            if (erro != null) erroLiveData.postValue(erro);
+        };
+        erroAuthRepoLiveData.observeForever(authErrorObserver);
+        erroUserRepoLiveData.observeForever(userErrorObserver);
+    }
+
+    public void cadastrar(Usuario novoUsuario, String senha) {
+        this.usuarioPendente = novoUsuario;
+        authRepository.cadastrar(novoUsuario.getEmail(), senha);
     }
 
     public void login(String email, String senha) {
-        // Inicia o Passo 1 (Login no Auth).
         authRepository.login(email, senha);
     }
 
     public void logout() {
-        // O AuthRepository vai setar o usuarioLogadoLiveData para null.
-        // O novo observador no construtor cuidará de limpar os dados do usuário.
         authRepository.logout();
     }
 
-    /**
-     * Pega os dados atualizados do formulário de perfil e manda o repositório salvar.
-     * Reutiliza a lógica de "salvar" (set) do UserRepository.
-     *
-     * @param usuarioAtualizado O objeto Usuario com os dados modificados.
-     */
     public void atualizarDadosUsuario(Usuario usuarioAtualizado) {
-        // Pega o usuário logado (FirebaseUser)
-        FirebaseUser user = usuarioLogadoLiveData.getValue();
-        if (user != null) {
-            // Garante que o UID e o Email (que não mudam) estejam corretos
-            usuarioAtualizado.setUid(user.getUid());
-            usuarioAtualizado.setEmail(user.getEmail()); // Garante que o email não foi alterado
-
-            // Chama o método de salvar do repositório, que vai ATUALIZAR
-            // o documento existente.
-            userRepository.salvarUsuarioAdicional(user.getUid(), usuarioAtualizado);
+        String uid = getUsuarioLogadoUid();
+        if (uid != null) {
+            usuarioAtualizado.setUid(uid);
+            if(usuarioLogadoLiveData.getValue() != null) {
+                usuarioAtualizado.setEmail(usuarioLogadoLiveData.getValue().getEmail());
+            }
+            userRepository.salvarUsuarioAdicional(uid, usuarioAtualizado);
         } else {
-            // Se o usuário for nulo, informa o erro (raro, mas seguro)
-            userRepository.getErroLiveData().postValue("Usuário não está logado. Não foi possível salvar.");
+            erroLiveData.postValue("Usuário não está logado. Não foi possível salvar.");
         }
     }
 
+    public void uploadFotoPerfil(Uri imageUri) {
+        String uid = getUsuarioLogadoUid();
+        if (uid != null && imageUri != null) {
+            userRepository.uploadFotoPerfil(uid, imageUri);
+        } else {
+            erroLiveData.postValue("Usuário não está logado. Não é possível enviar a foto.");
+        }
+    }
 
-    //GETTERS
+    private String getUsuarioLogadoUid() {
+        FirebaseUser user = usuarioLogadoLiveData.getValue();
+        if (user != null) {
+            return user.getUid();
+        }
+        return null;
+    }
+
+    // --- GETTERS PARA A UI OBSERVAR ---
 
     public LiveData<FirebaseUser> getUsuarioLogadoLiveData() {
         return usuarioLogadoLiveData;
     }
 
-    public LiveData<String> getErroAutenticacaoLiveData() {
-        return erroAutenticacaoLiveData;
-    }
-
-    public LiveData<Boolean> getCadastroSucessoLiveData() {
-        return cadastroSucessoLiveData;
-    }
-
     public LiveData<Boolean> getSalvamentoUsuarioSucessoLiveData() {
         return salvamentoUsuarioSucessoLiveData;
     }
-    /**
-     * Expõe os dados completos do usuário (Nome, CPF, etc.) vindos do Firestore.
-     * Os Fragments (como CriarCampanha) vão observar este LiveData.
-     */
+
     public LiveData<Usuario> getDadosUsuarioLiveData() {
         return dadosUsuarioLiveData;
+    }
+
+    public LiveData<String> getErroLiveData() {
+        return erroLiveData;
+    }
+
+    public void limparErro() {
+        erroLiveData.setValue(null);
+    }
+
+    // ⬇️ --- CORREÇÃO DO ERRO 2 (Parte A) --- ⬇️
+    /**
+     * Limpa o status de sucesso do salvamento.
+     */
+    public void limparStatusSalvamento() {
+        // Pede ao repositório para limpar seu LiveData
+        userRepository.limparStatusSalvamento();
+    }
+
+
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        cadastroSucessoLiveData.removeObserver(cadastroSucessoObserver);
+        usuarioLogadoLiveData.removeObserver(usuarioLogadoObserver);
+        erroAuthRepoLiveData.removeObserver(authErrorObserver);
+        erroUserRepoLiveData.removeObserver(userErrorObserver);
     }
 }

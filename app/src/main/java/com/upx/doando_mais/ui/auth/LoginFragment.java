@@ -1,14 +1,11 @@
 package com.upx.doando_mais.ui.auth;
 
 import android.os.Bundle;
-
-
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -16,13 +13,11 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
-
 import com.upx.doando_mais.R;
-import com.upx.doando_mais.databinding.FragmentLoginBinding;
+import com.upx.doando_mais.databinding.FragmentLoginBinding; // Verifique se o nome do binding está correto
 
 public class LoginFragment extends Fragment {
 
-    // 1. DECLARAÇÕES
     private FragmentLoginBinding binding;
     private AuthViewModel authViewModel;
     private NavController navController;
@@ -32,7 +27,6 @@ public class LoginFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // 2. INFLAR O LAYOUT
         binding = FragmentLoginBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
@@ -41,99 +35,84 @@ public class LoginFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // 3. INICIALIZAÇÃO
         navController = Navigation.findNavController(view);
-
-        // Pega a ViewModel compartilhada (mesma do CadastroFragment)
         authViewModel = new ViewModelProvider(requireActivity()).get(AuthViewModel.class);
 
-        // 4. CONFIGURAR LISTENERS
-        configurarListenersDeClique();
-
-        // 5. OBSERVAR VIEWMODEL
+        configurarCliques();
         observarViewModel();
     }
 
-    private void configurarListenersDeClique() {
-        binding.btnLogin.setOnClickListener(v -> {
-            // Quando o botão "Entrar" for clicado
-            tentarLogin();
-        });
+    private void configurarCliques() {
+        binding.btnLogin.setOnClickListener(v -> tentarLogin());
 
-        binding.tvRegisterLink.setOnClickListener(v -> {
-            // Navega para a tela de Cadastro
-            // TODO: Criar a ação no nav_graph.xml
-            navController.navigate(R.id.action_loginFragment_to_cadastroFragment);
+        binding.tvCadastroLink.setOnClickListener(v ->
+                navController.navigate(R.id.action_loginFragment_to_cadastroFragment)
+        );
 
-        });
-
-        binding.tvForgotPassword.setOnClickListener(v -> {
-            // Navega para a tela "Esqueci minha senha"
-            // TODO: Criar a ação no nav_graph.xml
-            // navController.navigate(R.id.action_loginFragment_to_esqueceuSenhaFragment);
-            Toast.makeText(getContext(), "Navegar para Esq. Senha (Impl. NavGraph)", Toast.LENGTH_SHORT).show();
-        });
+        binding.tvEsqueceuSenha.setOnClickListener(v ->
+                navController.navigate(R.id.action_loginFragment_to_esqueceuSenhaFragment)
+        );
     }
 
     /**
-     * Observa os LiveData do AuthViewModel para reagir a mudanças de estado.
+     * Observa o ViewModel para reagir a sucesso ou falha no login.
      */
     private void observarViewModel() {
-        // Observa o SUCESSO do Login
-        authViewModel.getUsuarioLogadoLiveData().observe(getViewLifecycleOwner(), firebaseUser -> {
-            if (firebaseUser != null) {
-                // Usuário está logado!
-                binding.btnLogin.setEnabled(true);
-                Toast.makeText(getContext(), "Login bem-sucedido!", Toast.LENGTH_SHORT).show();
-
+        // Observa SUCESSO:
+        // O login é considerado "sucesso" quando os dados do usuário (do Firestore)
+        // são carregados após a autenticação.
+        authViewModel.getDadosUsuarioLiveData().observe(getViewLifecycleOwner(), usuario -> {
+            if (usuario != null) {
+                mostrarCarregando(false);
                 // Navega para a tela principal (Feed)
                 navController.navigate(R.id.action_loginFragment_to_feedFragment);
             }
         });
 
-        // Observa ERROS de autenticação (Login ou Cadastro)
-        authViewModel.getErroAutenticacaoLiveData().observe(getViewLifecycleOwner(), erro -> {
+        // Observa ERRO:
+        // --- ⬇️ ESTA É A CORREÇÃO DO SEU ERRO ⬇️ ---
+        // Trocamos 'getErroAutenticacaoLiveData' pelo novo 'getErroLiveData' unificado
+        authViewModel.getErroLiveData().observe(getViewLifecycleOwner(), erro -> {
             if (erro != null) {
-                // Deu erro!
-                binding.btnLogin.setEnabled(true); // Reabilita o botão
+                mostrarCarregando(false);
                 Toast.makeText(getContext(), "Erro: " + erro, Toast.LENGTH_LONG).show();
+
+                // Limpa o erro para não ser exibido novamente (ao girar a tela, etc.)
+                authViewModel.limparErro();
             }
         });
     }
 
     /**
-     * Coleta, valida e inicia o processo de login.
+     * Coleta os dados do formulário e tenta fazer o login via ViewModel.
      */
     private void tentarLogin() {
-        // Limpa erros anteriores
-        binding.tilLoginEmail.setError(null);
-        binding.tilLoginPassword.setError(null);
-
-        // Coleta os dados
         String email = binding.etLoginEmail.getText().toString().trim();
         String senha = binding.etLoginPassword.getText().toString();
 
-        // Validação
-        if (TextUtils.isEmpty(email)) {
-            binding.tilLoginEmail.setError("E-mail é obrigatório");
-            return;
-        }
-        if (TextUtils.isEmpty(senha)) {
-            binding.tilLoginPassword.setError("Senha é obrigatória");
+        if (TextUtils.isEmpty(email) || TextUtils.isEmpty(senha)) {
+            Toast.makeText(getContext(), "Preencha email e senha.", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Desabilita o botão e chama a ViewModel
-        binding.btnLogin.setEnabled(false);
-        Toast.makeText(getContext(), "Verificando...", Toast.LENGTH_SHORT).show();
+        mostrarCarregando(true);
         authViewModel.login(email, senha);
     }
 
+    /**
+     * Controla a UI para mostrar o estado de "carregando".
+     */
+    private void mostrarCarregando(boolean carregando) {
+        // TODO: Adicione um ProgressBar ao seu 'fragment_login.xml' com id 'progressBarLogin'
+        // if (binding.progressBarLogin != null) {
+        //     binding.progressBarLogin.setVisibility(carregando ? View.VISIBLE : View.GONE);
+        // }
+        binding.btnLogin.setEnabled(!carregando);
+    }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        // Limpa a referência ao binding
-        binding = null;
+        binding = null; // Previne memory leaks
     }
 }

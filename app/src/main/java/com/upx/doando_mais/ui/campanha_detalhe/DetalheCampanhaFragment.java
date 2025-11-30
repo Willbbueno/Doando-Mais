@@ -13,14 +13,15 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import com.upx.doando_mais.data.model.Campanha;
 import com.upx.doando_mais.databinding.FragmentDetalheCampanhaBinding;
-
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 public class DetalheCampanhaFragment extends Fragment {
 
     private FragmentDetalheCampanhaBinding binding;
     private DetalheCampanhaViewModel detalheCampanhaViewModel;
     private String campanhaId;
-    private Campanha campanhaAtual; // Para guardar a campanha carregada
+    private Campanha campanhaAtual;
 
     public DetalheCampanhaFragment() {}
 
@@ -35,21 +36,15 @@ public class DetalheCampanhaFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // 1. Pega o ID que foi enviado pelo Adapter
         if (getArguments() != null) {
             campanhaId = getArguments().getString("campanhaId");
         }
 
-        // 2. Inicializa o ViewModel
         detalheCampanhaViewModel = new ViewModelProvider(this).get(DetalheCampanhaViewModel.class);
 
-        // 3. Configura os Observadores
         configurarObservadores();
+        configurarCliques(); // A lógica de clique já simula a ida ao site
 
-        // 4. Configura os Cliques (serão ativados após os dados carregarem)
-        configurarCliques();
-
-        // 5. Manda o ViewModel buscar os dados
         if (campanhaId != null) {
             mostrarCarregando(true);
             detalheCampanhaViewModel.carregarDetalhesCampanha(campanhaId);
@@ -59,16 +54,14 @@ public class DetalheCampanhaFragment extends Fragment {
     }
 
     private void configurarObservadores() {
-        // Observa o SUCESSO da busca
         detalheCampanhaViewModel.getCampanhaDetalheLiveData().observe(getViewLifecycleOwner(), campanha -> {
             if (campanha != null) {
-                this.campanhaAtual = campanha; // Salva a campanha
+                this.campanhaAtual = campanha;
                 preencherDados(campanha);
                 mostrarCarregando(false);
             }
         });
 
-        // Observa o ERRO da busca
         detalheCampanhaViewModel.getErroLiveData().observe(getViewLifecycleOwner(), erro -> {
             if (erro != null) {
                 mostrarCarregando(false);
@@ -77,23 +70,21 @@ public class DetalheCampanhaFragment extends Fragment {
         });
     }
 
-    /**
-     * Preenche todos os campos com os dados da Campanha.
-     * ESTA É A LÓGICA PRINCIPAL DA FASE 6.
-     */
     private void preencherDados(Campanha campanha) {
-        // --- 1. Preenche Dados Comuns ---
         binding.tvDetalheTitulo.setText(campanha.getTitulo());
         binding.tvDetalheOrganizador.setText("Criada por: " + campanha.getNomeOrganizador());
         binding.tvDetalheDescricao.setText(campanha.getDescricao());
 
-        // --- 2. Lógica de Visibilidade (Paciente vs. Pública) ---
+        // <-- MUDANÇA 1: Garante que o botão apareça -->
+        binding.btnAcaoDetalhe.setVisibility(View.VISIBLE);
+        // Atualiza o texto para "Vou doar" (como no XML)
+        binding.btnAcaoDetalhe.setText("Vou doar");
+
         if (campanha.getTipoCampanha() != null && campanha.getTipoCampanha().equals("Paciente")) {
             // --- MOSTRAR LAYOUT DE PACIENTE ---
             binding.groupDetalhePaciente.setVisibility(View.VISIBLE);
             binding.groupDetalhePublica.setVisibility(View.GONE);
 
-            // Preenche os campos de Paciente
             String meta = campanha.getMetaDoadores() + (campanha.getMetaDoadores() > 1 ? " Doadores" : " Doador");
             binding.tvDetalheMeta.setText(meta);
             binding.tvDetalheTipoSanguineo.setText(campanha.getTipoSanguineoNecessario());
@@ -101,50 +92,38 @@ public class DetalheCampanhaFragment extends Fragment {
             binding.tvDetalheEnderecoPaciente.setText(campanha.getEnderecoHemocentro());
             binding.tvDetalheTelefonePaciente.setText(campanha.getContatoWhatsApp());
 
-            // Configura o botão de Ação (Agendar)
-            binding.btnAcaoDetalhe.setText("Agendar Doação");
-            // (A lógica de clique está em configurarCliques())
-
         } else {
             // --- MOSTRAR LAYOUT PÚBLICO ---
             binding.groupDetalhePaciente.setVisibility(View.GONE);
             binding.groupDetalhePublica.setVisibility(View.VISIBLE);
 
-            // Preenche os campos Públicos
-            // (A "convocação" já está na descrição, mas podemos usar o campo de descrição aqui também)
-            // binding.tvDetalheConvocacao.setText(campanha.getDescricao()); // Se quiser duplicar
             binding.tvDetalheLocalPublica.setText(campanha.getNomeHemocentro());
             binding.tvDetalheTelefonePublica.setText(campanha.getContatoWhatsApp());
-
-            // TODO: O Horário de Atendimento precisa ser salvo no Hemocentro e na Campanha
             binding.tvDetalheHorario.setText("Seg a Sex, das 08h às 17h"); // Valor "mockado"
 
-            // Configura o botão de Ação (Ele some)
-            binding.btnAcaoDetalhe.setVisibility(View.GONE);
+            // <-- MUDANÇA 2: LINHA REMOVIDA -->
+            // A linha abaixo foi removida para que o botão continue visível
+            // binding.btnAcaoDetalhe.setVisibility(View.GONE);
         }
     }
 
-    /**
-     * Configura os cliques dos botões (Google Maps, Agendamento, Compartilhar)
-     */
     private void configurarCliques() {
 
-        // Botão de Ação Principal (Agendar Doação - Apenas para Paciente)
+        // Botão de Ação Principal (Vou doar)
         binding.btnAcaoDetalhe.setOnClickListener(v -> {
-            // TODO: Fase 7 - Incrementar o contador no Firestore
-            // detalheCampanhaViewModel.incrementarAgendamento(campanhaId);
+            // Simulação para a apresentação:
+            Toast.makeText(getContext(), "Redirecionando para agendamento...", Toast.LENGTH_SHORT).show();
 
-            // Abre o link da Colsan (conforme diretriz)
-            String url = "https://colsan.org.br/site/agendamento";
-            Intent i = new Intent(Intent.ACTION_VIEW);
-            i.setData(Uri.parse(url));
-            startActivity(i);
+            // Lógica real (já implementada):
+            // String url = "https://colsan.org.br/site/agendamento";
+            // Intent i = new Intent(Intent.ACTION_VIEW);
+            // i.setData(Uri.parse(url));
+            // startActivity(i);
         });
 
         // Botão de Mapa (Apenas para Paciente)
         binding.btnDetalheMapa.setOnClickListener(v -> {
             if (campanhaAtual != null) {
-                // Abre o Google Maps com o endereço do hemocentro
                 Uri gmmIntentUri = Uri.parse("geo:0,0?q=" + Uri.encode(campanhaAtual.getEnderecoHemocentro()));
                 Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
                 mapIntent.setPackage("com.google.android.apps.maps");
@@ -180,7 +159,9 @@ public class DetalheCampanhaFragment extends Fragment {
         } else {
             binding.progressBarDetalhe.setVisibility(View.GONE);
             binding.scrollView.setVisibility(View.VISIBLE);
-            // (Os botões são mostrados ou escondidos pela lógica do preencherDados)
+
+            // <-- MUDANÇA 3: Garante que os botões voltem -->
+            // (a lógica 'preencherDados' vai decidir sobre o btn_acao_detalhe)
             binding.btnCompartilharDetalhe.setVisibility(View.VISIBLE);
         }
     }
@@ -188,6 +169,6 @@ public class DetalheCampanhaFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        binding = null; // Limpa a referência do binding
+        binding = null;
     }
 }

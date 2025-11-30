@@ -7,7 +7,10 @@ import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-
+import com.google.firebase.FirebaseApp; // Adicione esta importação
+import com.google.firebase.appcheck.FirebaseAppCheck; // Adicione esta importação
+import com.google.firebase.appcheck.debug.DebugAppCheckProviderFactory; // Adicione esta importação
+import androidx.appcompat.app.AppCompatDelegate;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -15,7 +18,12 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         super.onCreate(savedInstanceState);
+        FirebaseApp.initializeApp(this);
+        FirebaseAppCheck firebaseAppCheck = FirebaseAppCheck.getInstance();
+        firebaseAppCheck.installAppCheckProviderFactory(
+                DebugAppCheckProviderFactory.getInstance());
         // 1. Garanta que este R.layout.activity_main está correto
         setContentView(R.layout.activity_main);
 
@@ -43,8 +51,5 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         }
-        // else {
-        //   Se for nulo, algo no seu XML (Passo 1 ou 2) está errado.
-        // }
     }
 }
