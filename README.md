@@ -28,19 +28,13 @@ O objetivo principal é solucionar a dificuldade na organização e divulgação
 ## 📱 Telas e Funcionalidades
 
 | Feed de Campanhas | Detalhes da Campanha | Perfil do Doador |
-|:----------------:|:--------------------:|:----------------:|
-| <img src="<img width="403" height="867" alt="image" src="https://github.com/user-attachments/assets/b910bdc3-b9d4-42f8-a21f-082aa099d233" />
-" width="200" /> | <img src="<img width="412" height="874" alt="image" src="https://github.com/user-attachments/assets/f4736d64-4630-4cee-8001-afb1d83c5808" />
-" width="200" /> | <img src="<img width="410" height="865" alt="image" src="https://github.com/user-attachments/assets/3c63b168-9b4a-4812-b5b5-dd1c2cb9a0c1" />
-" /> |
+|:-----------------:|:--------------------:|:----------------:|
+| <img src="https://github.com/user-attachments/assets/b910bdc3-b9d4-42f8-a21f-082aa099d233" width="200" /> | <img src="https://github.com/user-attachments/assets/f4736d64-4630-4cee-8001-afb1d83c5808" width="200" /> | <img src="https://github.com/user-attachments/assets/3c63b168-9b4a-4812-b5b5-dd1c2cb9a0c1" width="200" /> |
 | *Visualização rápida de campanhas urgentes e públicas.* | *Informações completas, local e botão de ação.* | *Gestão de dados e contador de vidas salvas.* |
 
 | Criar Campanha | Registrar Doação | Orientações |
 |:--------------:|:----------------:|:-----------:|
-| <img width="409" height="875" alt="image" src="https://github.com/user-attachments/assets/39d0b522-7f29-4e70-b6c0-42453449ba62" />
-" <img src="<img width="412" height="871" alt="image" src="https://github.com/user-attachments/assets/b0199f17-6638-4c6a-bbbc-fb191debd275" />
-" <img src="<img width="407" height="872" alt="image" src="https://github.com/user-attachments/assets/58aca4d9-8c8b-4e31-b532-a939bb76e126" />
-" 
+| <img src="https://github.com/user-attachments/assets/39d0b522-7f29-4e70-b6c0-42453449ba62" width="200" /> | <img src="https://github.com/user-attachments/assets/b0199f17-6638-4c6a-bbbc-fb191debd275" width="200" /> | <img src="https://github.com/user-attachments/assets/58aca4d9-8c8b-4e31-b532-a939bb76e126" width="200" /> |
 | *Fluxo simples para solicitar doações.* | *Envio de comprovante e histórico.* | *Requisitos básicos para doação.* |
 
 ---
