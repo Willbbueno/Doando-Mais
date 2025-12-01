@@ -37,10 +37,10 @@ O objetivo principal é solucionar a dificuldade na organização e divulgação
 
 | Criar Campanha | Registrar Doação | Orientações |
 |:--------------:|:----------------:|:-----------:|
-| <img src="<img width="409" height="875" alt="image" src="https://github.com/user-attachments/assets/39d0b522-7f29-4e70-b6c0-42453449ba62" />
-" width="200" /> | <img src="<img width="412" height="871" alt="image" src="https://github.com/user-attachments/assets/b0199f17-6638-4c6a-bbbc-fb191debd275" />
-" width="200" /> | <img src="<img width="407" height="872" alt="image" src="https://github.com/user-attachments/assets/58aca4d9-8c8b-4e31-b532-a939bb76e126" />
-" width="200" /> |
+| <img width="409" height="875" alt="image" src="https://github.com/user-attachments/assets/39d0b522-7f29-4e70-b6c0-42453449ba62" />
+" <img src="<img width="412" height="871" alt="image" src="https://github.com/user-attachments/assets/b0199f17-6638-4c6a-bbbc-fb191debd275" />
+" <img src="<img width="407" height="872" alt="image" src="https://github.com/user-attachments/assets/58aca4d9-8c8b-4e31-b532-a939bb76e126" />
+" 
 | *Fluxo simples para solicitar doações.* | *Envio de comprovante e histórico.* | *Requisitos básicos para doação.* |
 
 ---
