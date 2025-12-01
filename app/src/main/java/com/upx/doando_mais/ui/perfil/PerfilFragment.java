@@ -97,6 +97,12 @@ public class PerfilFragment extends Fragment {
             authViewModel.logout();
         });
 
+        // ⬇️ LÓGICA ADICIONADA AQUI ⬇️
+        binding.btnHistoricoDoacoes.setOnClickListener(v -> {
+            // Certifique-se de ter criado o fragment com id 'minhasDoacoesFragment' no nav_graph.xml
+            navController.navigate(R.id.minhasDoacoesFragment);
+        });
+
         binding.btnAtualizarCadastro.setOnClickListener(v -> {
             navController.navigate(R.id.action_perfilFragment_to_atualizarCadastroFragment);
         });
@@ -136,12 +142,12 @@ public class PerfilFragment extends Fragment {
             Glide.with(this)
                     .load(usuario.getUrlFotoPerfil())
                     .circleCrop()
-                    .placeholder(R.drawable.ic_perfil_placeholder) // Crie este drawable
-                    .error(R.drawable.ic_perfil_placeholder)     // Crie este drawable
+                    .placeholder(R.drawable.ic_perfil_placeholder)
+                    .error(R.drawable.ic_perfil_placeholder)
                     .into(binding.ivPerfilFoto);
         } else {
             Glide.with(this)
-                    .load(R.drawable.ic_perfil_placeholder) // Crie este drawable
+                    .load(R.drawable.ic_perfil_placeholder)
                     .circleCrop()
                     .into(binding.ivPerfilFoto);
         }

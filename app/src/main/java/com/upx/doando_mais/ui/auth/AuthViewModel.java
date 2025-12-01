@@ -172,4 +172,11 @@ public class AuthViewModel extends AndroidViewModel {
         erroAuthRepoLiveData.removeObserver(authErrorObserver);
         erroUserRepoLiveData.removeObserver(userErrorObserver);
     }
+
+    public void recarregarUsuario() {
+        FirebaseUser user = usuarioLogadoLiveData.getValue();
+        if (user != null) {
+            userRepository.buscarUsuario(user.getUid());
+        }
+    }
 }

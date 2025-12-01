@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,7 +13,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.bumptech.glide.Glide; // 1. IMPORTANTE: Adicione este import!
+import com.bumptech.glide.Glide;
 import com.upx.doando_mais.R;
 import com.upx.doando_mais.data.model.Usuario;
 import com.upx.doando_mais.databinding.FragmentFeedBinding;
@@ -87,9 +86,6 @@ public class FeedFragment extends Fragment implements FilterBottomSheetFragment.
         });
     }
 
-    /**
-     * Preenche o cabeçalho do feed com os dados do usuário
-     */
     private void preencherCabecalho(Usuario usuario) {
         binding.tvGreeting.setText("Olá,\n" + usuario.getNomeCompleto());
         binding.tvHeaderTipoSanguineo.setText(usuario.getTipoSanguineo());
@@ -99,15 +95,13 @@ public class FeedFragment extends Fragment implements FilterBottomSheetFragment.
         String doacoesStr = usuario.getQuantidadeDoacoes() == 1 ? "vida salva\naté agora!" : "vidas salvas\naté agora!";
         binding.tvHeaderDoacoesText.setText(doacoesStr);
 
-        // 2. LÓGICA CORRIGIDA PARA CARREGAR A FOTO
         if (usuario.getUrlFotoPerfil() != null && !usuario.getUrlFotoPerfil().isEmpty()) {
             Glide.with(this)
                     .load(usuario.getUrlFotoPerfil())
-                    .placeholder(R.drawable.ic_perfil_placeholder) // Mostra enquanto carrega
-                    .error(R.drawable.ic_perfil_placeholder)       // Mostra se der erro
+                    .placeholder(R.drawable.ic_perfil_placeholder)
+                    .error(R.drawable.ic_perfil_placeholder)
                     .into(binding.ivUserPhoto);
         } else {
-            // Se não tiver foto, carrega o placeholder padrão
             Glide.with(this)
                     .load(R.drawable.ic_perfil_placeholder)
                     .into(binding.ivUserPhoto);
@@ -115,9 +109,15 @@ public class FeedFragment extends Fragment implements FilterBottomSheetFragment.
     }
 
     private void setupClickListeners() {
+        // Botão de Filtro
         binding.btnFiltro.setOnClickListener(v -> {
             FilterBottomSheetFragment bottomSheet = FilterBottomSheetFragment.newInstance();
             bottomSheet.show(getChildFragmentManager(), "FilterBottomSheet");
+        });
+
+        binding.btnAdicionarDoacao.setOnClickListener(v -> {
+            // Navega para a tela de registro (usando o ID que está no nav_graph)
+            Navigation.findNavController(requireView()).navigate(R.id.registrarDoacaoFragment);
         });
     }
 
@@ -132,5 +132,16 @@ public class FeedFragment extends Fragment implements FilterBottomSheetFragment.
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Força a atualização dos dados do usuário (incluindo o contador)
+        if (authViewModel != null && authViewModel.getUsuarioLogadoLiveData().getValue() != null) {
+            String uid = authViewModel.getUsuarioLogadoLiveData().getValue().getUid();
+
+            authViewModel.recarregarUsuario();
+        }
     }
 }

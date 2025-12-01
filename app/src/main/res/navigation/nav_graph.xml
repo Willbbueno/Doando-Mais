@@ -83,6 +83,7 @@
         android:name="com.upx.doando_mais.ui.orientacoes.OrientacoesFragment"
         android:label="OrientacoesFragment"
         tools:layout="@layout/fragment_orientacoes" />
+
     <fragment
         android:id="@+id/perfilFragment"
         android:name="com.upx.doando_mais.ui.perfil.PerfilFragment"
@@ -101,11 +102,13 @@
             android:id="@+id/action_perfilFragment_to_excluirContaFragment"
             app:destination="@id/excluirContaFragment" />
     </fragment>
+
     <fragment
         android:id="@+id/atualizarCadastroFragment"
         android:name="com.upx.doando_mais.ui.perfil.AtualizarCadastroFragment"
         android:label="AtualizarCadastroFragment"
         tools:layout="@layout/fragment_atualizar_cadastro" />
+
     <fragment
         android:id="@+id/detalheCampanhaFragment"
         android:name="com.upx.doando_mais.ui.campanha_detalhe.DetalheCampanhaFragment"
@@ -115,6 +118,7 @@
             android:name="campanhaId"
             app:argType="string" />
     </fragment>
+
     <fragment
         android:id="@+id/editarCampanhaFragment"
         android:name="com.upx.doando_mais.ui.campanha_editar.EditarCampanhaFragment"
@@ -124,16 +128,19 @@
             android:name="campanhaId"
             app:argType="string" />
     </fragment>
+
     <fragment
         android:id="@+id/alterarSenhaFragment"
         android:name="com.upx.doando_mais.ui.perfil.AlterarSenhaFragment"
         android:label="AlterarSenhaFragment"
         tools:layout="@layout/fragment_alterar_senha" />
+
     <fragment
         android:id="@+id/sobreAppFragment"
         android:name="com.upx.doando_mais.ui.perfil.SobreAppFragment"
         android:label="SobreAppFragment"
         tools:layout="@layout/fragment_sobre_app" />
+
     <fragment
         android:id="@+id/excluirContaFragment"
         android:name="com.upx.doando_mais.ui.perfil.ExcluirContaFragment"
@@ -151,5 +158,16 @@
         android:name="com.upx.doando_mais.ui.campanha_criar.FormAbertaFragment"
         android:label="Formulário Campanha Pública"
         tools:layout="@layout/fragment_form_publica" />
+
+    <fragment
+        android:id="@+id/registrarDoacaoFragment"
+        android:name="com.upx.doando_mais.ui.doacao_registrar.RegistrarDoacaoFragment"
+        android:label="Registrar Doação"
+        tools:layout="@layout/fragment_registrar_doacao" />
+    <fragment
+        android:id="@+id/minhasDoacoesFragment"
+        android:name="com.upx.doando_mais.ui.perfil.MinhasDoacoesFragment"
+        android:label="Minhas Doações"
+        tools:layout="@layout/fragment_minhas_doacoes" />
 
 </navigation>

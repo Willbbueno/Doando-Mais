@@ -1,36 +1,28 @@
 package com.upx.doando_mais.data.model;
 
-
-import com.google.firebase.firestore.ServerTimestamp;
-
-import java.util.Date;
-
 public class Doacao {
 
-    private String id; // ID do doc no firebase, gerado automaticamente.
-    private String tipoSanguineo; // Tipo de sangue doado
-    private Date dataDoacao;
-    private String cidade;
-    private String estado;
-    private String comprovanteUrl;
-    private Date dataRegistro;
+    private String id;
+    private String idUsuario; // Para saber de quem é a doação
+    private String dataDoacao;
+    private String local;
+    private String tipoSanguineo;
+    private String urlComprovante;
 
-    // Construtor com parâmetros
-    public Doacao(String id, String tipoSanguineo, Date dataDoacao, String cidade, String estado, String comprovanteUrl, Date dataRegistro) {
-
-        this.id = id;
-        this.tipoSanguineo = tipoSanguineo;
-        this.dataDoacao = dataDoacao;
-        this.cidade = cidade;
-        this.estado = estado;
-        this.comprovanteUrl = comprovanteUrl;
-        this.dataRegistro = dataRegistro;
+    // Construtor vazio (Obrigatório para o Firebase)
+    public Doacao() {
     }
 
-    // Construtor vazio para firebase
-    public Doacao() {}
+    public Doacao(String id, String idUsuario, String dataDoacao, String local, String tipoSanguineo, String urlComprovante) {
+        this.id = id;
+        this.idUsuario = idUsuario;
+        this.dataDoacao = dataDoacao;
+        this.local = local;
+        this.tipoSanguineo = tipoSanguineo;
+        this.urlComprovante = urlComprovante;
+    }
 
-    // Getters e setters
+    // Getters e Setters
 
     public String getId() {
         return id;
@@ -38,6 +30,30 @@ public class Doacao {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getIdUsuario() {
+        return idUsuario;
+    }
+
+    public void setIdUsuario(String idUsuario) {
+        this.idUsuario = idUsuario;
+    }
+
+    public String getDataDoacao() {
+        return dataDoacao;
+    }
+
+    public void setDataDoacao(String dataDoacao) {
+        this.dataDoacao = dataDoacao;
+    }
+
+    public String getLocal() {
+        return local;
+    }
+
+    public void setLocal(String local) {
+        this.local = local;
     }
 
     public String getTipoSanguineo() {
@@ -48,46 +64,11 @@ public class Doacao {
         this.tipoSanguineo = tipoSanguineo;
     }
 
-    public Date getDataDoacao() {
-        return dataDoacao;
+    public String getUrlComprovante() {
+        return urlComprovante;
     }
 
-    public void setDataDoacao(Date dataDoacao) {
-        this.dataDoacao = dataDoacao;
+    public void setUrlComprovante(String urlComprovante) {
+        this.urlComprovante = urlComprovante;
     }
-
-    public String getCidade() {
-        return cidade;
-    }
-
-    public void setCidade(String cidade) {
-        this.cidade = cidade;
-    }
-
-    public String getEstado() {
-        return estado;
-    }
-
-    public void setEstado(String estado) {
-        this.estado = estado;
-    }
-
-    public String getComprovanteUrl() {
-        return comprovanteUrl;
-    }
-
-    public void setComprovanteUrl(String comprovanteUrl) {
-        this.comprovanteUrl = comprovanteUrl;
-    }
-
-    @ServerTimestamp // Anotação para data de registro automática
-
-    public Date getDataRegistro() {
-        return dataRegistro;
-    }
-
-    public void setDataRegistro(Date dataRegistro) {
-        this.dataRegistro = dataRegistro;
-    }
-
 }
