@@ -1,7 +1,7 @@
 # Doando+ ❤️
 
 <div align="center">
-  <img src="app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png" alt="Logo Doando+" width="120">
+  
   <br>
   <h3>Conectando doadores, pacientes e hemocentros para salvar vidas.</h3>
 </div>
@@ -95,6 +95,3 @@ Para rodar este projeto localmente, você precisará do Android Studio e de uma 
 
 ---
 
-<div align="center">
-  <small>Desenvolvido com ❤️ para salvar vidas.</small>
-</div>
